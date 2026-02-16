@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getUserPlan } from '../lib/supabaseHelpers'
+import { generateWeeklyPlan } from '../lib/weeklyPlanGenerator'
+import { getExercisesByIds } from '../lib/exerciseHelpers'
 import Button from '../components/ui/Button'
 
 // ============================================================================
@@ -82,28 +84,63 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [plan, setPlan] = useState(null)
+  const [weeklyPlan, setWeeklyPlan] = useState(null)
+  const [exercisesData, setExercisesData] = useState({})
+  const [todaySession, setTodaySession] = useState(null)
 
   useEffect(() => {
-    async function loadUserPlan() {
+    async function loadPlanData() {
       setIsLoading(true)
 
       // TODO: Replace with actual user ID from auth context
       const userId = 'TEMP_USER_ID'
 
-      const { data, error } = await getUserPlan(userId)
+      // 1. Cargar plan de Supabase
+      const { data: planData, error } = await getUserPlan(userId)
 
       if (error) {
         console.error('Error loading plan:', error)
-        // Asumir que no hay plan si hay error
         setPlan(null)
-      } else {
-        setPlan(data) // Puede ser null si no hay plan activo
+        setIsLoading(false)
+        return
       }
+
+      if (!planData) {
+        setPlan(null)
+        setIsLoading(false)
+        return
+      }
+
+      setPlan(planData)
+
+      // 2. Generar plan semanal
+      const weekly = generateWeeklyPlan(planData, {})
+      setWeeklyPlan(weekly)
+
+      // 3. Cargar ejercicios
+      const allExerciseIds = weekly.weeks
+        .flatMap(w => w.sessions)
+        .flatMap(s => s.exercises || [])
+        .map(e => e.exerciseId)
+
+      const uniqueIds = [...new Set(allExerciseIds)]
+      const { data: exercises } = await getExercisesByIds(uniqueIds)
+
+      const exercisesMap = {}
+      exercises?.forEach(ex => { exercisesMap[ex.id] = ex })
+      setExercisesData(exercisesMap)
+
+      // 4. Determinar sesión de hoy
+      const currentWeekNumber = 1 // TODO: usar plan.current_week cuando esté disponible
+      const currentWeekData = weekly.weeks.find(w => w.weekNumber === currentWeekNumber)
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'lowercase' })
+      const session = currentWeekData?.sessions.find(s => s.day === today)
+      setTodaySession(session)
 
       setIsLoading(false)
     }
 
-    loadUserPlan()
+    loadPlanData()
   }, [])
 
   // ============================================================================
@@ -171,6 +208,36 @@ export default function Dashboard() {
   const currentWeek = 1 // TODO: En Fase 2 será plan.current_week
   const currentPhase = getCurrentPhase(currentWeek, plan)
   const progressPercent = Math.round((currentWeek / plan.total_weeks) * 100)
+
+  // ============================================================================
+  // HELPERS
+  // ============================================================================
+
+  function getDayName(day) {
+    const names = {
+      monday: 'Lunes',
+      tuesday: 'Martes',
+      wednesday: 'Miércoles',
+      thursday: 'Jueves',
+      friday: 'Viernes',
+      saturday: 'Sábado',
+      sunday: 'Domingo'
+    }
+    return names[day] || day
+  }
+
+  function getSessionTypeName(type) {
+    const names = {
+      mobility_activation: 'Movilidad + Activación',
+      strength: 'Fuerza',
+      capacity: 'Capacidad Aeróbica',
+      running: 'Running',
+      maintenance: 'Mantenimiento',
+      rest: 'Descanso',
+      assessment: 'Evaluación'
+    }
+    return names[type] || type
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -285,27 +352,99 @@ export default function Dashboard() {
       </section>
 
       {/* ================================================================ */}
-      {/* SECCIÓN 3: PRÓXIMOS PASOS (Placeholder) */}
+      {/* SECCIÓN 3: SESIÓN DE HOY */}
       {/* ================================================================ */}
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Próximos Pasos</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Sesión de Hoy</h2>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-8 text-center">
-            <div className="text-4xl mb-3">🚧</div>
-            <h3 className="font-semibold text-blue-900 text-lg mb-2">
-              Contenido en desarrollo — Fase 2
-            </h3>
-            <p className="text-blue-700 text-sm mb-4">
-              Aquí verás:
-            </p>
-            <ul className="text-blue-700 text-sm space-y-1 max-w-xs mx-auto">
-              <li>✓ Ejercicios de hoy</li>
-              <li>✓ Progreso semanal</li>
-              <li>✓ Re-tests programados</li>
-              <li>✓ Historial de sesiones</li>
-            </ul>
-          </div>
+          {todaySession ? (
+            <div className="bg-white rounded-lg shadow-sm border p-6">
+              <h3 className="text-xl font-bold mb-4">
+                📅 {getDayName(todaySession.day)}
+              </h3>
+
+              <div className="mb-4">
+                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                  {getSessionTypeName(todaySession.type)}
+                </span>
+                <span className="ml-3 text-gray-600">
+                  ⏱️ {todaySession.duration} minutos
+                </span>
+              </div>
+
+              {todaySession.type === 'rest' ? (
+                <p className="text-gray-600">
+                  💤 Día de descanso. Tu cuerpo necesita recuperar para adaptarse.
+                </p>
+              ) : todaySession.type === 'running' ? (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <p className="font-semibold text-orange-900 mb-2">
+                    🏃 Running Intervals
+                  </p>
+                  <p className="text-orange-800">
+                    {todaySession.notes || 'Consulta tu plan para detalles'}
+                  </p>
+                </div>
+              ) : todaySession.type === 'assessment' ? (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <p className="font-semibold text-purple-900 mb-2">
+                    📋 Evaluación
+                  </p>
+                  <p className="text-purple-800">
+                    {todaySession.notes || 'Completa los tests de evaluación'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {todaySession.exercises && todaySession.exercises.length > 0 ? (
+                    todaySession.exercises.map((ex, idx) => {
+                      const exercise = exercisesData[ex.exerciseId]
+                      if (!exercise) {
+                        return (
+                          <div key={idx} className="border-l-4 border-gray-300 pl-4 py-2 bg-gray-50 rounded">
+                            <p className="font-semibold text-gray-500">{ex.exerciseId}</p>
+                            <p className="text-sm text-gray-500">
+                              {ex.sets} series × {ex.reps || `${ex.holdSeconds}seg hold`}
+                            </p>
+                          </div>
+                        )
+                      }
+
+                      return (
+                        <div key={idx} className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 rounded">
+                          <p className="font-semibold">{exercise.name_es}</p>
+                          <p className="text-sm text-gray-600">
+                            {ex.sets} series × {ex.reps ? `${ex.reps} reps` : `${ex.holdSeconds}seg hold`}
+                          </p>
+                          {ex.notes && (
+                            <p className="text-xs text-gray-500 mt-1">💡 {ex.notes}</p>
+                          )}
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <p className="text-gray-500 text-sm">
+                      {todaySession.notes || 'No hay ejercicios específicos para esta sesión'}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <button
+                className="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={() => alert('Funcionalidad "Marcar como completada" será implementada en Fase 3')}
+              >
+                ✓ Marcar como Completada
+              </button>
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-lg border p-6">
+              <p className="text-gray-600 text-center">
+                No hay sesión programada para hoy o es día de descanso.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
