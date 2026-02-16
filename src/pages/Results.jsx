@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
+import { getExercisesByIds } from '../lib/exerciseHelpers'
+import ExerciseCard from '../components/exercises/ExerciseCard'
 
 // ============================================================================
 // MOCK DATA (fallback for direct URL access / page refresh)
@@ -155,7 +157,7 @@ function formatExerciseId(id) {
     .join(' ')
 }
 
-function PriorityCard({ priority }) {
+function PriorityCard({ priority, exercisesData, loadingExercises }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="flex">
@@ -193,6 +195,40 @@ function PriorityCard({ priority }) {
                 {formatExerciseId(ex)}
               </span>
             ))}
+          </div>
+
+          {/* Ejercicios Recomendados */}
+          <div className="mt-4 border-t pt-4">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">
+              📋 Ejercicios Recomendados
+            </h4>
+
+            {loadingExercises ? (
+              <p className="text-sm text-gray-500">Cargando ejercicios...</p>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {priority.exercises?.slice(0, 4).map(exerciseId => {
+                    const exercise = exercisesData[exerciseId]
+                    if (!exercise) return null
+
+                    return (
+                      <ExerciseCard
+                        key={exerciseId}
+                        exercise={exercise}
+                        variant="compact"
+                      />
+                    )
+                  })}
+                </div>
+
+                {priority.exercises?.length > 4 && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    +{priority.exercises.length - 4} ejercicios más
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -298,9 +334,55 @@ export default function Results() {
   const highCount = plan.priorities.filter(p => p.severity === 'HIGH').length
   const noPriorities = plan.priorities.length === 0
 
+  // State para ejercicios
+  const [exercisesData, setExercisesData] = useState({})
+  const [loadingExercises, setLoadingExercises] = useState(true)
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  // Cargar ejercicios de Supabase
+  useEffect(() => {
+    async function loadExercises() {
+      if (!plan?.priorities) {
+        setLoadingExercises(false)
+        return
+      }
+
+      // Extraer todos los exercise IDs de todas las prioridades
+      const allExerciseIds = plan.priorities
+        .flatMap(p => p.exercises || [])
+
+      // Remover duplicados
+      const uniqueIds = [...new Set(allExerciseIds)]
+
+      if (uniqueIds.length === 0) {
+        setLoadingExercises(false)
+        return
+      }
+
+      // Cargar ejercicios de Supabase
+      const { data, error } = await getExercisesByIds(uniqueIds)
+
+      if (error) {
+        console.error('Error cargando ejercicios:', error)
+        setLoadingExercises(false)
+        return
+      }
+
+      // Convertir array a objeto { id: exercise } para lookup rápido
+      const exercisesMap = {}
+      data.forEach(ex => {
+        exercisesMap[ex.id] = ex
+      })
+
+      setExercisesData(exercisesMap)
+      setLoadingExercises(false)
+    }
+
+    loadExercises()
+  }, [plan])
 
   // Phase week ranges
   const phase1Start = 1
@@ -386,7 +468,12 @@ export default function Results() {
           ) : (
             <div className="space-y-4">
               {plan.priorities.map((priority, index) => (
-                <PriorityCard key={index} priority={priority} />
+                <PriorityCard
+                  key={index}
+                  priority={priority}
+                  exercisesData={exercisesData}
+                  loadingExercises={loadingExercises}
+                />
               ))}
             </div>
           )}
@@ -463,6 +550,12 @@ export default function Results() {
             >
               Repetir Evaluación
             </Button>
+            <button
+              onClick={() => navigate('/exercises')}
+              className="w-full sm:w-auto px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+            >
+              Ver Biblioteca Completa
+            </button>
           </div>
         </div>
       </section>
