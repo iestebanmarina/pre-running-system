@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Landing from './pages/Landing'
+import Onboarding from './pages/Onboarding'
 import Assessment from './pages/Assessment'
 import Results from './pages/Results'
 import Dashboard from './pages/Dashboard'
@@ -10,7 +12,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/assessment" replace />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/assessment" element={<Assessment />} />
         <Route path="/results" element={<Results />} />
         <Route path="/dashboard" element={<Dashboard />} />
