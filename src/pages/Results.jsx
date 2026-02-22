@@ -538,7 +538,7 @@ export default function Results() {
               variant="primary"
               size="lg"
               className="w-full sm:w-auto"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/dashboard', { state: { plan } })}
             >
               Empezar Programa
             </Button>

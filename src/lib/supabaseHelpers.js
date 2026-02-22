@@ -233,10 +233,37 @@ export async function getUserPlan(userId) {
       return { data: null, error }
     }
 
-    return { data, error: null }
+    return { data: normalizePlan(data), error: null }
 
   } catch (error) {
     console.error('Unexpected error fetching user plan:', error)
     return { data: null, error }
+  }
+}
+
+// ============================================================================
+// NORMALIZERS
+// ============================================================================
+
+/**
+ * Normaliza un plan de Supabase (snake_case) al formato frontend (camelCase)
+ */
+export function normalizePlan(planFromDb) {
+  if (!planFromDb) return null
+
+  return {
+    id: planFromDb.id,
+    userId: planFromDb.user_id,
+    assessmentId: planFromDb.assessment_id,
+    priorities: planFromDb.priorities,
+    estimatedWeeks: planFromDb.estimated_weeks,
+    phase1Duration: planFromDb.phase_1_duration,
+    phase2Duration: planFromDb.phase_2_duration,
+    phase3Duration: planFromDb.phase_3_duration,
+    totalWeeks: planFromDb.total_weeks,
+    status: planFromDb.status,
+    currentWeek: planFromDb.current_week,
+    createdAt: planFromDb.created_at,
+    updatedAt: planFromDb.updated_at
   }
 }

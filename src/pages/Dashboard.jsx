@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { getUserPlan } from '../lib/supabaseHelpers'
 import { generateWeeklyPlan } from '../lib/weeklyPlanGenerator'
 import { getExercisesByIds } from '../lib/exerciseHelpers'
@@ -64,8 +64,8 @@ function StatusBadge({ status }) {
  * @returns {string} - "Evaluación" | "Fundamentos" | "Transición Running"
  */
 function getCurrentPhase(currentWeek, plan) {
-  const phase1End = plan.phase_1_duration
-  const phase2End = plan.phase_1_duration + plan.phase_2_duration
+  const phase1End = plan.phase1Duration
+  const phase2End = plan.phase1Duration + plan.phase2Duration
 
   if (currentWeek <= phase1End) {
     return 'Evaluación'
@@ -82,6 +82,7 @@ function getCurrentPhase(currentWeek, plan) {
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [isLoading, setIsLoading] = useState(true)
   const [plan, setPlan] = useState(null)
   const [weeklyPlan, setWeeklyPlan] = useState(null)
@@ -92,32 +93,57 @@ export default function Dashboard() {
     async function loadPlanData() {
       setIsLoading(true)
 
-      // TODO: Replace with actual user ID from auth context
-      const userId = 'TEMP_USER_ID'
+      // 1. PRIMERO: Intentar cargar plan desde navigation state
+      const planFromState = location.state?.plan
 
-      // 1. Cargar plan de Supabase
-      const { data: planData, error } = await getUserPlan(userId)
+      if (planFromState) {
+        console.log('📦 Plan cargado desde navigation state')
+        setPlan(planFromState)
 
-      if (error) {
-        console.error('Error loading plan:', error)
+        // Generar plan semanal
+        const weekly = generateWeeklyPlan(planFromState, {})
+        setWeeklyPlan(weekly)
+
+        // Cargar ejercicios
+        const allExerciseIds = weekly.weeks
+          .flatMap(w => w.sessions)
+          .flatMap(s => s.exercises || [])
+          .map(e => e.exerciseId)
+
+        const uniqueIds = [...new Set(allExerciseIds)]
+        const { data: exercises } = await getExercisesByIds(uniqueIds)
+
+        const exercisesMap = {}
+        exercises?.forEach(ex => { exercisesMap[ex.id] = ex })
+        setExercisesData(exercisesMap)
+
+        // Determinar sesión de hoy
+        const currentWeek = weekly.weeks[0]
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
+        const session = currentWeek?.sessions.find(s => s.day === today)
+        setTodaySession(session)
+
+        setIsLoading(false)
+        return
+      }
+
+      // 2. FALLBACK: Intentar cargar desde Supabase
+      console.log('🔍 Plan no encontrado en state, buscando en Supabase...')
+      const { data: planData, error } = await getUserPlan('TEMP_USER_ID')
+
+      if (error || !planData) {
+        console.log('❌ No se encontró plan en Supabase')
         setPlan(null)
         setIsLoading(false)
         return
       }
 
-      if (!planData) {
-        setPlan(null)
-        setIsLoading(false)
-        return
-      }
-
+      console.log('✅ Plan cargado desde Supabase')
       setPlan(planData)
 
-      // 2. Generar plan semanal
       const weekly = generateWeeklyPlan(planData, {})
       setWeeklyPlan(weekly)
 
-      // 3. Cargar ejercicios
       const allExerciseIds = weekly.weeks
         .flatMap(w => w.sessions)
         .flatMap(s => s.exercises || [])
@@ -130,9 +156,7 @@ export default function Dashboard() {
       exercises?.forEach(ex => { exercisesMap[ex.id] = ex })
       setExercisesData(exercisesMap)
 
-      // 4. Determinar sesión de hoy
-      const currentWeekNumber = 1 // TODO: usar plan.current_week cuando esté disponible
-      const currentWeekData = weekly.weeks.find(w => w.weekNumber === currentWeekNumber)
+      const currentWeekData = weekly.weeks.find(w => w.weekNumber === 1)
       const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
       const session = currentWeekData?.sessions.find(s => s.day === today)
       setTodaySession(session)
@@ -141,7 +165,7 @@ export default function Dashboard() {
     }
 
     loadPlanData()
-  }, [])
+  }, [location.state])
 
   // ============================================================================
   // LOADING STATE
@@ -205,9 +229,9 @@ export default function Dashboard() {
   // DASHBOARD WITH PLAN
   // ============================================================================
 
-  const currentWeek = 1 // TODO: En Fase 2 será plan.current_week
+  const currentWeek = 1 // TODO: En Fase 2 será plan.currentWeek
   const currentPhase = getCurrentPhase(currentWeek, plan)
-  const progressPercent = Math.round((currentWeek / plan.total_weeks) * 100)
+  const progressPercent = Math.round((currentWeek / plan.totalWeeks) * 100)
 
   // ============================================================================
   // HELPERS
@@ -250,7 +274,7 @@ export default function Dashboard() {
             Mi Programa Pre-Running
           </h1>
           <p className="text-gray-600 text-center mb-6">
-            Fase {currentPhase} — Semana {currentWeek} de {plan.total_weeks}
+            Fase {currentPhase} — Semana {currentWeek} de {plan.totalWeeks}
           </p>
 
           {/* Progress bar */}
@@ -267,7 +291,7 @@ export default function Dashboard() {
             </div>
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>Semana {currentWeek}</span>
-              <span>Semana {plan.total_weeks}</span>
+              <span>Semana {plan.totalWeeks}</span>
             </div>
           </div>
         </div>
@@ -292,7 +316,7 @@ export default function Dashboard() {
               <div>
                 <div className="text-sm text-gray-500 mb-1">Semana</div>
                 <div className="text-lg font-semibold text-gray-900">
-                  {currentWeek} de {plan.total_weeks}
+                  {currentWeek} de {plan.totalWeeks}
                 </div>
               </div>
 
