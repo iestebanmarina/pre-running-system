@@ -538,7 +538,7 @@ export default function Results() {
               variant="primary"
               size="lg"
               className="w-full sm:w-auto"
-              onClick={() => alert('El dashboard se implementará próximamente.')}
+              onClick={() => navigate('/dashboard')}
             >
               Empezar Programa
             </Button>
