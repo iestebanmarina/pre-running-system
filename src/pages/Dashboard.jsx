@@ -133,7 +133,7 @@ export default function Dashboard() {
       // 4. Determinar sesión de hoy
       const currentWeekNumber = 1 // TODO: usar plan.current_week cuando esté disponible
       const currentWeekData = weekly.weeks.find(w => w.weekNumber === currentWeekNumber)
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'lowercase' })
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
       const session = currentWeekData?.sessions.find(s => s.day === today)
       setTodaySession(session)
 

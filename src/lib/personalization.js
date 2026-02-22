@@ -19,13 +19,60 @@
  * Actual exercise content (videos, instructions) will be in exercises database (Phase 2)
  */
 const EXERCISES = {
-  ANKLE_ROM: ['ankle_wall_mobility', 'calf_stretch', 'dorsiflexion_active'],
-  HIP_EXTENSION: ['hip_flexor_stretch', 'couch_stretch', '90_90_hip_mobility'],
-  GLUTE_ACTIVATION: ['clams', 'bridge', 'single_leg_bridge', 'fire_hydrants'],
-  CORE: ['plank_progression', 'dead_bug', 'bird_dog'],
-  POSTERIOR_CHAIN: ['toe_touch_progression', 'hamstring_stretch', 'good_morning'],
-  AEROBIC: ['walking_progression', 'zone2_cardio'],
-  BALANCE: ['single_leg_stand', 'balance_progression', 'stability_exercises']
+  ANKLE_ROM: [
+    'ankle_wall_mobility',
+    'ankle_circles',
+    'toe_walking',
+    'calf_raises',
+    'dorsiflexion_active',
+    'hip_flexor_stretch'
+  ],
+  HIP_EXTENSION: [
+    'hip_flexor_stretch',
+    'couch_stretch',
+    '90_90_hip_mobility',
+    'hip_car',
+    'worlds_greatest_stretch',
+    'hip_opener'
+  ],
+  GLUTE_ACTIVATION: [
+    'glute_bridge',
+    'clams',
+    'fire_hydrants',
+    'banded_walks',
+    'single_leg_bridge',
+    'glute_kickback',
+    'hip_thrust',
+    'bulgarian_split_squat'
+  ],
+  CORE: [
+    'plank_progression',
+    'dead_bug',
+    'bird_dog',
+    'pallof_press',
+    'side_plank',
+    'anti_rotation'
+  ],
+  POSTERIOR_CHAIN: [
+    'toe_touch_progression',
+    'hamstring_stretch',
+    'good_morning',
+    'single_leg_rdl',
+    'thoracic_rotation',
+    'cat_cow'
+  ],
+  AEROBIC: [
+    'walking_progression',
+    'zone2_cardio',
+    'incline_walking'
+  ],
+  BALANCE: [
+    'single_leg_stand',
+    'balance_progression',
+    'stability_exercises',
+    'single_leg_rdl',
+    'step_ups'
+  ]
 }
 
 /**

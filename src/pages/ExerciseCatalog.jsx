@@ -84,7 +84,7 @@ export default function ExerciseCatalog() {
                 📚 Biblioteca de Ejercicios
               </h1>
               <p className="mt-1 text-sm text-gray-600">
-                {exercises.length} ejercicios base • Más próximamente
+                {exercises.length} ejercicios disponibles
               </p>
             </div>
 

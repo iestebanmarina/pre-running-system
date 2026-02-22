@@ -5,6 +5,45 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-02-23
+
+### Added - Fase 2: Contenido y Ejercicios
+- ✅ Biblioteca completa de 30 ejercicios
+  - 10 ejercicios de movilidad
+  - 10 ejercicios de activación
+  - 8 ejercicios de fuerza
+  - 2 ejercicios de capacidad aeróbica
+- ✅ Sistema de ejercicios
+  - Componente ExerciseCard (variants: compact/full)
+  - Página ExerciseCatalog con filtros por categoría
+  - Integración en Results page mostrando ejercicios recomendados
+- ✅ Plan semanal generado
+  - Algoritmo weeklyPlanGenerator (430 líneas)
+  - 16 semanas completas (assessment + fundamentos + transición)
+  - Distribución inteligente de ejercicios por día
+  - Progresión automática de running intervals
+- ✅ Dashboard ejecutable
+  - "Sesión de hoy" con ejercicios específicos
+  - Visualización de tipo de sesión (movilidad/fuerza/running/descanso)
+  - Sets, reps y notas por ejercicio
+- ✅ Base de datos ampliada
+  - Tabla exercises con 30 registros
+  - Helpers: getAllExercises, getExercisesByCategory, getExercisesByTarget, getExercisesByIds
+  - Testing page para verificar integridad de datos
+
+### Changed
+- Algoritmo de personalización expandido (5-8 ejercicios por prioridad vs 2-3 anteriormente)
+- Results page ahora muestra hasta 4 ejercicios por prioridad
+- ExerciseCatalog subtitle dinámico ("30 ejercicios disponibles")
+
+### Technical
+- 4 nuevas migraciones SQL (002-005)
+- 6 nuevos archivos creados
+- ~1,500 líneas de código añadidas
+- Integración completa Supabase ↔ Plan Semanal ↔ Dashboard
+
+---
+
 ---
 
 ## [0.1.0] - 2026-02-16
