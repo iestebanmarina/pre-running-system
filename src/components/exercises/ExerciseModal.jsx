@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import PropTypes from 'prop-types'
+import Button from '../ui/Button'
 
 export default function ExerciseModal({ exercise, isOpen, onClose }) {
   useEffect(() => {
@@ -19,10 +20,10 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
   if (!isOpen || !exercise) return null
 
   const categoryColors = {
-    mobility: { bg: 'bg-blue-50', border: 'border-blue-500', text: 'text-blue-900' },
-    activation: { bg: 'bg-green-50', border: 'border-green-500', text: 'text-green-900' },
-    strength: { bg: 'bg-accent-pink/10', border: 'border-accent-pink', text: 'text-accent-pink' },
-    capacity: { bg: 'bg-purple-50', border: 'border-purple-500', text: 'text-purple-900' }
+    mobility: { accent: 'border-accent-orange', badge: 'text-accent-orange border-accent-orange' },
+    activation: { accent: 'border-accent-pink', badge: 'text-accent-pink border-accent-pink' },
+    strength: { accent: 'border-black', badge: 'text-black border-black' },
+    capacity: { accent: 'border-accent-orange', badge: 'text-accent-orange border-accent-orange' }
   }
 
   const categoryLabels = {
@@ -46,28 +47,28 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-elevated overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-elevated overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className={`sticky top-0 z-10 ${colors.bg} border-b-4 ${colors.border} px-8 py-6`}>
+        {/* Header — white bg with category accent top stripe */}
+        <div className={`sticky top-0 z-10 bg-white border-t-4 ${colors.accent} border-b border-border px-6 py-4`}>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <span className={`px-3 py-1 ${colors.bg} ${colors.text} border ${colors.border} rounded-full text-sm font-bold`}>
+                <span className={`px-2.5 py-0.5 bg-white ${colors.badge} border rounded-full text-xs font-bold uppercase tracking-wide`}>
                   {categoryLabels[exercise.category] || exercise.category}
                 </span>
-                <span className="px-3 py-1 bg-white border border-border text-muted rounded-full text-sm">
+                <span className="px-2.5 py-0.5 bg-white border border-border text-muted rounded-full text-xs">
                   {difficultyLabels[exercise.difficulty] || exercise.difficulty}
                 </span>
               </div>
 
-              <h2 className="text-3xl font-bold text-black mb-1">
+              <h2 className="text-xl font-bold text-black mb-1">
                 {exercise.name_es}
               </h2>
 
               {exercise.name && (
-                <p className="text-lg text-muted">
+                <p className="text-sm text-muted">
                   {exercise.name}
                 </p>
               )}
@@ -75,7 +76,7 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
 
             <button
               onClick={onClose}
-              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/50 transition-colors"
+              className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface transition-colors"
               aria-label="Cerrar"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,37 +86,31 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
           </div>
 
           {/* Metadata */}
-          <div className="flex flex-wrap gap-6 mt-4 text-sm">
+          <div className="flex flex-wrap gap-4 mt-3 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
+              <svg className="w-4 h-4 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               <span className="font-medium text-black">{exercise.duration_minutes} min</span>
             </div>
 
             {exercise.sets_reps && (
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </div>
+                <svg className="w-4 h-4 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
                 <span className="font-medium text-black">{exercise.sets_reps}</span>
               </div>
             )}
 
             {exercise.hold_time && (
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
+                <svg className="w-4 h-4 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 <span className="font-medium text-black">{exercise.hold_time}</span>
               </div>
             )}
@@ -123,30 +118,27 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
         </div>
 
         {/* Scrollable content */}
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] px-8 py-6">
+        <div className="overflow-y-auto max-h-[calc(90vh-200px)] px-6 py-6">
           {/* Descripción */}
-          <div className="mb-8">
-            <p className="text-lg text-muted leading-relaxed">
+          <div className="mb-6">
+            <p className="text-base text-muted leading-relaxed">
               {exercise.description}
             </p>
           </div>
 
           {/* Instrucciones */}
           {exercise.instructions && exercise.instructions.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-accent-orange to-accent-pink rounded-xl flex items-center justify-center text-white font-bold">
-                  1
-                </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-black mb-3">
                 Instrucciones Paso a Paso
               </h3>
-              <ol className="space-y-4">
+              <ol className="space-y-2">
                 {exercise.instructions.map((step, idx) => (
-                  <li key={idx} className="flex gap-4">
-                    <span className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <li key={idx} className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-accent-orange to-accent-pink text-white rounded-full flex items-center justify-center text-sm font-bold">
                       {idx + 1}
                     </span>
-                    <span className="text-base text-black leading-relaxed pt-1">
+                    <span className="text-gray-800 leading-relaxed">
                       {step}
                     </span>
                   </li>
@@ -157,22 +149,14 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
 
           {/* Errores comunes */}
           {exercise.common_mistakes && exercise.common_mistakes.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-accent-pink rounded-xl flex items-center justify-center text-white font-bold">
-                  !
-                </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-black mb-3">
                 Errores Comunes a Evitar
               </h3>
-              <div className="bg-red-50 border-l-4 border-accent-pink rounded-xl p-6">
-                <ul className="space-y-3">
+              <div className="bg-white border-l-4 border-accent-pink p-4 rounded-r-lg">
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
                   {exercise.common_mistakes.map((mistake, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <span className="text-accent-pink mt-1 flex-shrink-0">▸</span>
-                      <span className="text-base text-red-900 leading-relaxed">
-                        {mistake}
-                      </span>
-                    </li>
+                    <li key={idx}>{mistake}</li>
                   ))}
                 </ul>
               </div>
@@ -181,20 +165,14 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
 
           {/* Equipamiento */}
           {exercise.equipment && exercise.equipment.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
-                <div className="w-10 h-10 bg-accent-orange rounded-xl flex items-center justify-center text-white font-bold">
-                  #
-                </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-black mb-3">
                 Equipamiento Necesario
               </h3>
-              <div className="bg-orange-50 border-l-4 border-accent-orange rounded-xl p-6">
-                <ul className="space-y-2">
+              <div className="bg-white border-l-4 border-accent-orange p-4 rounded-r-lg">
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
                   {exercise.equipment.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <span className="w-2 h-2 bg-accent-orange rounded-full flex-shrink-0"></span>
-                      <span className="text-base text-orange-900">{item}</span>
-                    </li>
+                    <li key={idx}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -202,11 +180,8 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
           )}
 
           {/* Video placeholder */}
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-accent-orange to-accent-pink rounded-xl flex items-center justify-center text-white font-bold">
-                ▶
-              </div>
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-black mb-3">
               Demostración en Video
             </h3>
             <div className="bg-surface rounded-2xl border border-border p-12 text-center">
@@ -214,7 +189,7 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
-              <p className="text-muted text-lg">
+              <p className="text-muted text-base">
                 Video demostrativo próximamente
               </p>
             </div>
@@ -222,13 +197,10 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-border px-8 py-4">
-          <button
-            onClick={onClose}
-            className="w-full px-6 py-3 bg-black text-white rounded-xl font-bold hover:bg-gradient-to-r hover:from-accent-orange hover:to-accent-pink transition-all"
-          >
+        <div className="sticky bottom-0 bg-white border-t border-border px-6 py-4">
+          <Button variant="primary" size="lg" onClick={onClose} className="w-full">
             Cerrar
-          </button>
+          </Button>
         </div>
       </div>
     </div>
