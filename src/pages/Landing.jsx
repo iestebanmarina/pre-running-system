@@ -29,13 +29,13 @@ export default function Landing() {
                   onClick={() => navigate('/onboarding')}
                   className="bg-gradient-to-r from-accent-orange to-accent-pink text-white font-bold text-lg px-8 py-4 rounded-xl hover:scale-[1.02] transition-all duration-300 shadow-card hover:shadow-card-hover"
                 >
-                  Descubre Tu Plan
+                  Descubre tu PLAN
                 </button>
                 <button
                   onClick={scrollToSolucion}
                   className="border-2 border-black text-black font-semibold text-lg px-8 py-4 rounded-xl hover:bg-black hover:text-white transition-all duration-300"
                 >
-                  Como funciona
+                  Cómo funciona
                 </button>
               </div>
             </div>
@@ -44,19 +44,19 @@ export default function Landing() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-surface rounded-2xl p-6 border border-border">
                 <div className="text-4xl font-bold text-black">10M+</div>
-                <div className="text-sm text-muted mt-1">Corredores en Espana</div>
+                <div className="text-sm text-muted mt-1">corredores en España</div>
               </div>
               <div className="bg-surface rounded-2xl p-6 border border-border">
                 <div className="text-4xl font-bold bg-gradient-to-r from-accent-orange to-accent-pink bg-clip-text text-transparent">70%</div>
-                <div className="text-sm text-muted mt-1">Se lesionan el primer ano</div>
+                <div className="text-sm text-muted mt-1">se lesionan el primer año</div>
               </div>
               <div className="bg-black rounded-2xl p-6 text-white">
                 <div className="text-4xl font-bold">30</div>
-                <div className="text-sm text-white/70 mt-1">Ejercicios especializados</div>
+                <div className="text-sm text-white/70 mt-1">ejercicios especializados</div>
               </div>
               <div className="bg-black rounded-2xl p-6 text-white">
                 <div className="text-4xl font-bold">12</div>
-                <div className="text-sm text-white/70 mt-1">Semanas de programa</div>
+                <div className="text-sm text-white/70 mt-1">semanas de programa</div>
               </div>
             </div>
           </div>
@@ -67,10 +67,10 @@ export default function Landing() {
       <section className="py-20 px-6 md:px-12 bg-surface">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-4">
-            El Problema: Una Cascada Predecible
+            El Problema: Una lesión predecible
           </h2>
           <p className="text-lg text-muted text-center max-w-2xl mx-auto mb-12">
-            La mayoria de nuevos corredores siguen el mismo patron destructivo
+            La mayoria de nuevos corredores siguen el mismo patrón lesivo
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -127,12 +127,12 @@ export default function Landing() {
       <section className="py-20 px-6 md:px-12 bg-surface">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-12">
-            Por Que Pre-Running System?
+            ¿Por qué Pre-Running System?
           </h2>
           <div className="bg-white rounded-2xl shadow-card overflow-hidden border border-border">
             <div className="grid grid-cols-3 font-bold text-sm md:text-base">
               <div className="p-4 md:p-6" />
-              <div className="p-4 md:p-6 text-center text-muted">Programas Genericos</div>
+              <div className="p-4 md:p-6 text-center text-muted">Programas Genéricos</div>
               <div className="p-4 md:p-6 text-center text-white bg-gradient-to-r from-accent-orange to-accent-pink font-bold">Pre-Running System</div>
             </div>
             {[
@@ -155,7 +155,7 @@ export default function Landing() {
       <section className="py-20 px-6 md:px-12 bg-black text-white">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Empieza Tu Evaluacion Ahora
+            Empieza tu evaluacion ahora
           </h2>
           <p className="text-xl text-white/60 mb-10">
             Descubre que necesita tu cuerpo antes de correr.
@@ -165,10 +165,10 @@ export default function Landing() {
             onClick={() => navigate('/onboarding')}
             className="bg-gradient-to-r from-accent-orange to-accent-pink text-white font-bold text-xl px-10 py-5 rounded-xl hover:scale-[1.02] transition-all duration-300 shadow-elevated mb-4"
           >
-            Empezar Mi Evaluacion Gratuita
+            Empezar mi evaluacion gratuita
           </button>
           <p className="text-white/40 text-sm">
-            No requiere registro &bull; Resultados inmediatos
+            No requiere registro &bull; Resultados inmediatos &bull; By Iñigo Esteban
           </p>
         </div>
       </section>
