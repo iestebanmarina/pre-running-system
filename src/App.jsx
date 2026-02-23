@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Header from './components/layout/Header'
 import Landing from './pages/Landing'
 import Onboarding from './pages/Onboarding'
 import Assessment from './pages/Assessment'
@@ -11,15 +12,18 @@ import './App.css'
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/assessment" element={<Assessment />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/exercises" element={<ExerciseCatalog />} />
-        <Route path="/test-exercises" element={<ExerciseTest />} />
-      </Routes>
+      <Header />
+      <div className="pt-16">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/assessment" element={<Assessment />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/exercises" element={<ExerciseCatalog />} />
+          <Route path="/test-exercises" element={<ExerciseTest />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   )
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import Input from '../ui/Input'
 import Button from '../ui/Button'
+import TestInstructions from './TestInstructions'
 
 const CoreStabilityTest = ({ onComplete, initialData = {} }) => {
   const [plankTime, setPlankTime] = useState(initialData.core_plank_time || '')
@@ -13,7 +14,7 @@ const CoreStabilityTest = ({ onComplete, initialData = {} }) => {
     if (num < 30) return { text: 'DEBILIDAD SEVERA', color: 'text-red-600' }
     if (num >= 30 && num < 60) return { text: 'ACEPTABLE', color: 'text-yellow-600' }
     if (num >= 60 && num < 90) return { text: 'BUENO', color: 'text-green-600' }
-    return { text: 'EXCELENTE', color: 'text-blue-600' }
+    return { text: 'EXCELENTE', color: 'text-accent-orange' }
   }
 
   const isValid = (value) => {
@@ -39,20 +40,37 @@ const CoreStabilityTest = ({ onComplete, initialData = {} }) => {
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-black mb-2">
           Test #4: Estabilidad del Core
         </h2>
-        <p className="text-gray-600">
-          Mide la resistencia del core con la plancha. Cronometra cuánto tiempo puedes mantener
-          una plancha perfecta con forma correcta antes de perder la alineación.
+        <p className="text-muted">
+          Mide la resistencia del core con la plancha. Cronometra cuanto tiempo puedes mantener
+          una plancha perfecta con forma correcta antes de perder la alineacion.
         </p>
       </div>
 
-      <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-        <p className="text-gray-600 text-center px-4">
-          Video: Plancha Correcta (próximamente)
-        </p>
-      </div>
+      <TestInstructions
+        illustrationText="Vista lateral: cuerpo en linea recta desde cabeza hasta talones"
+        steps={[
+          'Posicionate boca abajo con antebrazos en el suelo',
+          'Codos bajo los hombros, antebrazos paralelos',
+          'Eleva tu cuerpo formando una linea recta (cabeza-espalda-talones)',
+          'Activa el abdomen (como si esperaras un golpe en la panza)',
+          'Manten la posicion sin que la cadera baje o suba',
+          'Cronometra cuanto tiempo aguantas con buena forma',
+          'Detente cuando la cadera empiece a caer o sientas que no puedes mas'
+        ]}
+        tips={[
+          'Mira al suelo (cuello neutro, no arriba)',
+          'Aprieta gluteos y abdomen simultaneamente',
+          'Respira normalmente, no aguantes la respiracion'
+        ]}
+        warnings={[
+          'Cadera muy alta o muy baja (rompe la linea)',
+          'Aguantar la respiracion',
+          'Contar tiempo cuando la forma ya se perdio'
+        ]}
+      />
 
       <div className="max-w-md space-y-2">
         <Input

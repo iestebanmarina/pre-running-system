@@ -27,14 +27,11 @@ const Assessment = () => {
   ]
 
   const handleTestComplete = (data) => {
-    // Merge new test data into assessment data
     setAssessmentData((prev) => ({ ...prev, ...data }))
 
-    // Move to next test or complete assessment
     if (currentStep < tests.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      // Assessment complete - you can handle submission here
       handleAssessmentComplete({ ...assessmentData, ...data })
     }
   }
@@ -42,7 +39,6 @@ const Assessment = () => {
   const handleAssessmentComplete = async (completeData) => {
     console.log('Assessment Complete:', completeData)
 
-    // Generate personalized plan
     const result = generatePersonalizedPlan(completeData)
 
     if (!result.success) {
@@ -51,37 +47,28 @@ const Assessment = () => {
       return
     }
 
-    // Display warnings if any
     if (result.warnings && result.warnings.length > 0) {
       console.warn('Advertencias:', result.warnings)
     }
 
-    // Log the generated plan
     console.log('Plan generado:', result.plan)
     console.log('Metadata:', result.metadata)
     console.log('\n' + formatPlanSummary(result.plan))
 
-    // Phase 1: Save to Supabase (assessments + plans tables)
     try {
-      // TODO Phase 1.5: Replace with actual user ID from AuthContext
-      // Using NULL for MVP since we don't have auth yet
       const TEMP_USER_ID = null
 
-      // Step 1: Save assessment to database
       const { data: assessmentRecord, error: assessmentError } = await saveAssessment(
         completeData,
         TEMP_USER_ID,
-        0 // week 0 = baseline assessment
+        0
       )
 
       if (assessmentError) {
         console.error('Failed to save assessment:', assessmentError)
-        alert('Error al guardar la evaluación. Por favor, intenta de nuevo.')
-        // Don't block navigation - user can still see results even if save fails
-        // return
+        alert('Error al guardar la evaluacion. Por favor, intenta de nuevo.')
       }
 
-      // Step 2: Save plan to database (only if assessment saved successfully)
       if (assessmentRecord) {
         const { data: planRecord, error: planError } = await savePlan(
           result.plan,
@@ -92,18 +79,15 @@ const Assessment = () => {
         if (planError) {
           console.error('Failed to save plan:', planError)
           alert('Error al guardar el plan. Por favor, contacta soporte.')
-          // Don't block navigation
         } else {
-          console.log('✅ Assessment and plan saved to Supabase!')
+          console.log('Assessment and plan saved to Supabase!')
         }
       }
 
     } catch (error) {
       console.error('Unexpected error during save:', error)
-      // Don't block user - log error but continue to results
     }
 
-    // Navigate to Results page with plan data
     navigate('/results', {
       state: {
         plan: result.plan,
@@ -123,21 +107,21 @@ const Assessment = () => {
   const progress = ((currentStep + 1) / tests.length) * 100
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Progress Bar */}
-      <div className="sticky top-0 bg-white shadow-sm z-10">
+      <div className="sticky top-16 bg-white/80 backdrop-blur-md shadow-sm z-10 border-b border-border">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted">
               Test {currentStep + 1} de {tests.length}
             </div>
-            <div className="text-sm font-medium text-gray-900">
+            <div className="text-sm font-medium text-black">
               {Math.round(progress)}% Completado
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-surface rounded-full h-2">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-accent-orange to-accent-pink h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -151,12 +135,12 @@ const Assessment = () => {
             <button
               key={test.id}
               onClick={() => setCurrentStep(index)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 ${
                 index === currentStep
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-black text-white'
                   : index < currentStep
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  ? 'bg-accent-orange/10 text-accent-orange hover:bg-accent-orange/20'
+                  : 'bg-surface text-muted hover:bg-border'
               }`}
             >
               {test.id}. {test.name}
@@ -177,7 +161,7 @@ const Assessment = () => {
       {currentStep > 0 && (
         <div className="max-w-4xl mx-auto px-4 pb-8">
           <Button variant="secondary" onClick={handlePrevious}>
-            ← Anterior
+            Anterior
           </Button>
         </div>
       )}

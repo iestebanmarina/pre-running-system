@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import Button from '../ui/Button'
+import TestInstructions from './TestInstructions'
 
 const HipExtensionTest = ({ onComplete, initialData = {} }) => {
   const [rightHip, setRightHip] = useState(initialData.hip_extension_right ?? null)
@@ -9,7 +10,7 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
   // Hip extension options (visual descriptors mapped to degrees)
   const options = [
     { label: 'Muslo elevado', value: -10, description: 'Por encima de la horizontal' },
-    { label: 'Muslo horizontal', value: 0, description: 'En línea con el cuerpo' },
+    { label: 'Muslo horizontal', value: 0, description: 'En linea con el cuerpo' },
     { label: 'Muslo bajo horizontal', value: 15, description: 'Por debajo de la horizontal' }
   ]
 
@@ -18,13 +19,13 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
     if (value === null) return null
 
     if (value < -5) {
-      return { text: 'LIMITACIÓN SEVERA', color: 'text-red-600' }
+      return { text: 'LIMITACION SEVERA', color: 'text-red-600' }
     } else if (value >= -5 && value < 0) {
-      return { text: 'LIMITACIÓN MODERADA', color: 'text-yellow-600' }
+      return { text: 'LIMITACION MODERADA', color: 'text-yellow-600' }
     } else if (value === 0) {
       return { text: 'NEUTRAL', color: 'text-yellow-600' }
     } else {
-      return { text: 'ÓPTIMO', color: 'text-green-600' }
+      return { text: 'OPTIMO', color: 'text-green-600' }
     }
   }
 
@@ -45,7 +46,7 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
   // Reusable selector component
   const HipSelector = ({ value, onChange, label }) => (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 mb-3">
+      <label className="block text-sm font-medium text-black mb-3">
         {label} <span className="text-red-500">*</span>
       </label>
       <div className="space-y-2">
@@ -54,14 +55,14 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
             key={option.value}
             type="button"
             onClick={() => onChange(option.value)}
-            className={`w-full p-4 text-left border-2 rounded-lg transition-all ${
+            className={`w-full p-4 text-left border-2 rounded-xl transition-all duration-300 ${
               value === option.value
-                ? 'border-blue-600 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? 'border-accent-orange bg-[#FFF5F0]'
+                : 'border-border hover:border-muted'
             }`}
           >
-            <div className="font-medium text-gray-900">{option.label}</div>
-            <div className="text-sm text-gray-600 mt-1">{option.description}</div>
+            <div className="font-medium text-black">{option.label}</div>
+            <div className="text-sm text-muted mt-1">{option.description}</div>
           </button>
         ))}
       </div>
@@ -71,21 +72,36 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Test #2: Extensión de Cadera
+        <h2 className="text-2xl font-bold text-black mb-2">
+          Test #2: Extension de Cadera
         </h2>
-        <p className="text-gray-600">
-          Evalúa el rango de extensión de cadera con el test de Thomas. Observa la posición
-          del muslo cuando la rodilla opuesta está flexionada contra el pecho.
+        <p className="text-muted">
+          Evalua el rango de extension de cadera con el test de Thomas. Observa la posicion
+          del muslo cuando la rodilla opuesta esta flexionada contra el pecho.
         </p>
       </div>
 
-      {/* Video Placeholder */}
-      <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-        <p className="text-gray-600 text-center px-4">
-          Video: Test de Thomas (próximamente)
-        </p>
-      </div>
+      <TestInstructions
+        illustrationText="Acostado boca arriba en el borde de una mesa, pierna colgando"
+        steps={[
+          'Acuestate boca arriba en el borde de una cama o mesa',
+          'Deja que la pierna derecha cuelgue fuera del borde',
+          'Abraza tu rodilla izquierda contra tu pecho',
+          'Relaja la pierna derecha completamente',
+          'Observa la posicion del muslo derecho: esta ELEVADO (por encima de horizontal)? HORIZONTAL (paralelo al suelo)? BAJO (cae por debajo de horizontal)?',
+          'Repite con la otra pierna'
+        ]}
+        tips={[
+          'Usa una mesa o cama a la altura de tu cadera',
+          'Relaja completamente la pierna que cuelga',
+          'Pide a alguien que observe desde el lado si es posible'
+        ]}
+        warnings={[
+          'Tensar la pierna (debe estar relajada)',
+          'No abrazar bien la rodilla opuesta (afecta la medicion)',
+          'Mesa muy alta o muy baja'
+        ]}
+      />
 
       {/* Selector Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

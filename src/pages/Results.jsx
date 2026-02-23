@@ -11,7 +11,7 @@ import ExerciseCard from '../components/exercises/ExerciseCard'
 const MOCK_PLAN = {
   priorities: [
     {
-      area: 'Dorsiflexión del tobillo',
+      area: 'Dorsiflexion del tobillo',
       severity: 'HIGH',
       current: '8 cm',
       target: '13 cm',
@@ -19,10 +19,10 @@ const MOCK_PLAN = {
       exercises: ['ankle_wall_mobility', 'calf_stretch', 'dorsiflexion_active']
     },
     {
-      area: 'Activación del glúteo',
+      area: 'Activacion del gluteo',
       severity: 'HIGH',
       current: 'Isquiotibiales primero',
-      target: 'Glúteo primero',
+      target: 'Gluteo primero',
       weeklyMinutes: 105,
       exercises: ['clams', 'bridge', 'single_leg_bridge', 'fire_hydrants']
     },
@@ -59,19 +59,19 @@ const MOCK_PLAN = {
 }
 
 // ============================================================================
-// CONSTANTS — full Tailwind class strings (no dynamic interpolation)
+// CONSTANTS
 // ============================================================================
 
 const SEVERITY_BAR = {
-  HIGH: 'bg-red-500',
-  MEDIUM: 'bg-yellow-500',
-  LOW: 'bg-gray-400'
+  HIGH: 'bg-accent-pink',
+  MEDIUM: 'bg-accent-orange',
+  LOW: 'bg-muted'
 }
 
 const SEVERITY_BADGE_STYLES = {
-  HIGH: 'bg-red-100 text-red-700',
-  MEDIUM: 'bg-yellow-100 text-yellow-700',
-  LOW: 'bg-gray-100 text-gray-600'
+  HIGH: 'bg-accent-pink/10 text-accent-pink',
+  MEDIUM: 'bg-accent-orange/10 text-accent-orange',
+  LOW: 'bg-surface text-muted'
 }
 
 const SEVERITY_LABELS = {
@@ -81,15 +81,15 @@ const SEVERITY_LABELS = {
 }
 
 const PHASE_COLORS = {
-  blue: 'bg-blue-500',
-  green: 'bg-green-500',
-  orange: 'bg-orange-500'
+  black: 'bg-black',
+  orange: 'bg-accent-orange',
+  pink: 'bg-accent-pink'
 }
 
 const PHASE_DOT = {
-  blue: 'bg-blue-500',
-  green: 'bg-green-500',
-  orange: 'bg-orange-500'
+  black: 'bg-black',
+  orange: 'bg-accent-orange',
+  pink: 'bg-accent-pink'
 }
 
 // ============================================================================
@@ -106,9 +106,9 @@ function SeverityBadge({ severity }) {
 
 function StatCard({ value, label }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-      <div className="text-3xl font-bold text-blue-600">{value}</div>
-      <div className="text-sm text-gray-600 mt-1">{label}</div>
+    <div className="bg-white rounded-2xl shadow-card border border-border p-6 text-center hover:shadow-card-hover transition-all duration-300">
+      <div className="text-3xl font-bold bg-gradient-to-r from-accent-orange to-accent-pink bg-clip-text text-transparent">{value}</div>
+      <div className="text-sm text-muted mt-1">{label}</div>
     </div>
   )
 }
@@ -120,29 +120,29 @@ function PhaseTimeline({ phase1, phase2, phase3 }) {
     <div className="mt-8">
       <div className="flex rounded-full overflow-hidden h-4">
         <div
-          className={`${PHASE_COLORS.blue}`}
+          className={`${PHASE_COLORS.black}`}
           style={{ width: `${(phase1 / total) * 100}%` }}
         />
         <div
-          className={`${PHASE_COLORS.green}`}
+          className={`${PHASE_COLORS.orange}`}
           style={{ width: `${(phase2 / total) * 100}%` }}
         />
         <div
-          className={`${PHASE_COLORS.orange}`}
+          className={`${PHASE_COLORS.pink}`}
           style={{ width: `${(phase3 / total) * 100}%` }}
         />
       </div>
-      <div className="flex mt-2 text-xs text-gray-600">
+      <div className="flex mt-2 text-xs text-muted">
         <div style={{ width: `${(phase1 / total) * 100}%` }} className="text-center">
-          <span className="font-medium text-blue-700">Evaluación</span>
+          <span className="font-medium text-black">Evaluacion</span>
           <br />{phase1} sem
         </div>
         <div style={{ width: `${(phase2 / total) * 100}%` }} className="text-center">
-          <span className="font-medium text-green-700">Fundamentos</span>
+          <span className="font-medium text-accent-orange">Fundamentos</span>
           <br />{phase2} sem
         </div>
         <div style={{ width: `${(phase3 / total) * 100}%` }} className="text-center">
-          <span className="font-medium text-orange-700">Transición</span>
+          <span className="font-medium text-accent-pink">Transicion</span>
           <br />{phase3} sem
         </div>
       </div>
@@ -159,7 +159,7 @@ function formatExerciseId(id) {
 
 function PriorityCard({ priority, exercisesData, loadingExercises }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-card border border-border overflow-hidden hover:shadow-card-hover transition-all duration-300">
       <div className="flex">
         {/* Color stripe */}
         <div className={`w-1.5 shrink-0 ${SEVERITY_BAR[priority.severity]}`} />
@@ -168,21 +168,21 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
           {/* Top row: area + badge + minutes */}
           <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-900">{priority.area}</h3>
+              <h3 className="font-semibold text-black">{priority.area}</h3>
               <SeverityBadge severity={priority.severity} />
             </div>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface text-muted">
               {priority.weeklyMinutes} min/sem
             </span>
           </div>
 
-          {/* Current → Target */}
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
-            <span>Actual: <span className="font-medium text-gray-900">{priority.current}</span></span>
-            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          {/* Current -> Target */}
+          <div className="flex items-center gap-2 text-sm text-muted mb-3">
+            <span>Actual: <span className="font-medium text-black">{priority.current}</span></span>
+            <svg className="w-4 h-4 text-border shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
-            <span>Objetivo: <span className="font-medium text-green-700">{priority.target}</span></span>
+            <span>Objetivo: <span className="font-medium text-accent-orange">{priority.target}</span></span>
           </div>
 
           {/* Exercise pills */}
@@ -190,7 +190,7 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
             {priority.exercises.map(ex => (
               <span
                 key={ex}
-                className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700"
+                className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-surface text-muted"
               >
                 {formatExerciseId(ex)}
               </span>
@@ -198,13 +198,13 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
           </div>
 
           {/* Ejercicios Recomendados */}
-          <div className="mt-4 border-t pt-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">
-              📋 Ejercicios Recomendados
+          <div className="mt-4 border-t border-border pt-4">
+            <h4 className="text-sm font-semibold text-black mb-3">
+              Ejercicios Recomendados
             </h4>
 
             {loadingExercises ? (
-              <p className="text-sm text-gray-500">Cargando ejercicios...</p>
+              <p className="text-sm text-muted">Cargando ejercicios...</p>
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -223,8 +223,8 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
                 </div>
 
                 {priority.exercises?.length > 4 && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    +{priority.exercises.length - 4} ejercicios más
+                  <p className="text-xs text-muted mt-2">
+                    +{priority.exercises.length - 4} ejercicios mas
                   </p>
                 )}
               </>
@@ -242,8 +242,8 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
 
 function getPhase1Weeks(startWeek) {
   return [
-    { week: startWeek, description: 'Tests iniciales — Evaluación completa de las 7 pruebas' },
-    { week: startWeek + 1, description: 'Repetición tests base — Confirmar resultados iniciales' }
+    { week: startWeek, description: 'Tests iniciales — Evaluacion completa de las 7 pruebas' },
+    { week: startWeek + 1, description: 'Repeticion tests base — Confirmar resultados iniciales' }
   ]
 }
 
@@ -253,11 +253,11 @@ function getPhase2Weeks(startWeek, duration) {
     const weekNum = startWeek + i
     let description
     if (i < 2) {
-      description = 'Movilidad + Activación — Corrección de patrones básicos'
+      description = 'Movilidad + Activacion — Correccion de patrones basicos'
     } else if (i < duration - 2) {
-      description = 'Movilidad + Activación + Fuerza — Construcción progresiva'
+      description = 'Movilidad + Activacion + Fuerza — Construccion progresiva'
     } else {
-      description = 'Fuerza + Capacidad — Preparación para la transición'
+      description = 'Fuerza + Capacidad — Preparacion para la transicion'
     }
     weeks.push({ week: weekNum, description })
   }
@@ -281,20 +281,20 @@ function PhaseBlock({ color, name, weekRange, description, weeks, defaultExpande
   const [expanded, setExpanded] = useState(defaultExpanded)
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-card border border-border overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 sm:p-5 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 sm:p-5 text-left hover:bg-surface transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className={`w-3 h-3 rounded-full shrink-0 ${PHASE_DOT[color]}`} />
           <div>
-            <div className="font-semibold text-gray-900">{name}</div>
-            <div className="text-sm text-gray-500">{weekRange}</div>
+            <div className="font-semibold text-black">{name}</div>
+            <div className="text-sm text-muted">{weekRange}</div>
           </div>
         </div>
         <svg
-          className={`w-5 h-5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={2}
@@ -305,13 +305,13 @@ function PhaseBlock({ color, name, weekRange, description, weeks, defaultExpande
       </button>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-4 sm:px-5 pb-4 sm:pb-5">
-          <p className="text-sm text-gray-600 mt-3 mb-4">{description}</p>
+        <div className="border-t border-border px-4 sm:px-5 pb-4 sm:pb-5">
+          <p className="text-sm text-muted mt-3 mb-4">{description}</p>
           <div className="space-y-2">
             {weeks.map(w => (
               <div key={w.week} className="flex gap-3 text-sm">
-                <span className="font-medium text-gray-500 shrink-0 w-20">Semana {w.week}</span>
-                <span className="text-gray-700">{w.description}</span>
+                <span className="font-medium text-muted shrink-0 w-20">Semana {w.week}</span>
+                <span className="text-black">{w.description}</span>
               </div>
             ))}
           </div>
@@ -334,7 +334,6 @@ export default function Results() {
   const highCount = plan.priorities.filter(p => p.severity === 'HIGH').length
   const noPriorities = plan.priorities.length === 0
 
-  // State para ejercicios
   const [exercisesData, setExercisesData] = useState({})
   const [loadingExercises, setLoadingExercises] = useState(true)
 
@@ -342,7 +341,6 @@ export default function Results() {
     window.scrollTo(0, 0)
   }, [])
 
-  // Cargar ejercicios de Supabase
   useEffect(() => {
     async function loadExercises() {
       if (!plan?.priorities) {
@@ -350,11 +348,9 @@ export default function Results() {
         return
       }
 
-      // Extraer todos los exercise IDs de todas las prioridades
       const allExerciseIds = plan.priorities
         .flatMap(p => p.exercises || [])
 
-      // Remover duplicados
       const uniqueIds = [...new Set(allExerciseIds)]
 
       if (uniqueIds.length === 0) {
@@ -362,7 +358,6 @@ export default function Results() {
         return
       }
 
-      // Cargar ejercicios de Supabase
       const { data, error } = await getExercisesByIds(uniqueIds)
 
       if (error) {
@@ -371,7 +366,6 @@ export default function Results() {
         return
       }
 
-      // Convertir array a objeto { id: exercise } para lookup rápido
       const exercisesMap = {}
       data.forEach(ex => {
         exercisesMap[ex.id] = ex
@@ -384,55 +378,50 @@ export default function Results() {
     loadExercises()
   }, [plan])
 
-  // Phase week ranges
   const phase1Start = 1
   const phase2Start = phase1Start + plan.phase1Duration
   const phase3Start = phase2Start + plan.phase2Duration
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Mock data banner */}
       {!hasPlanData && (
-        <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-3 text-center text-sm text-yellow-800">
-          Mostrando datos de ejemplo. <button onClick={() => navigate('/assessment')} className="underline font-medium hover:text-yellow-900">Completa tu evaluación</button> para ver tu plan personalizado.
+        <div className="bg-surface border-b border-border px-4 py-3 text-center text-sm text-muted">
+          Mostrando datos de ejemplo. <button onClick={() => navigate('/assessment')} className="underline font-medium hover:text-black">Completa tu evaluacion</button> para ver tu plan personalizado.
         </div>
       )}
 
-      {/* ================================================================ */}
       {/* SECTION 1: HEADER */}
-      {/* ================================================================ */}
-      <section className="bg-blue-50 px-4 py-8 md:py-12">
+      <section className="bg-gradient-to-r from-accent-orange to-accent-pink px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
           {/* Success badge */}
           <div className="flex justify-center mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-white/20 text-white">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Evaluación completada
+              Evaluacion completada
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white text-center">
             Tu Plan Personalizado Pre-Running
           </h1>
-          <p className="text-gray-600 text-center mt-2">
+          <p className="text-white/80 text-center mt-2">
             {noPriorities
-              ? 'Tu evaluación muestra que estás en buena forma para empezar.'
-              : `Un programa de ${plan.totalWeeks} semanas diseñado para tus necesidades específicas`
+              ? 'Tu evaluacion muestra que estas en buena forma para empezar.'
+              : `Un programa de ${plan.totalWeeks} semanas disenado para tus necesidades especificas`
             }
           </p>
 
-          {/* Stat cards */}
           {!noPriorities && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
                 <StatCard value={plan.totalWeeks} label="Semanas totales" />
-                <StatCard value={plan.priorities.length} label="Áreas a trabajar" />
+                <StatCard value={plan.priorities.length} label="Areas a trabajar" />
                 <StatCard value={highCount} label="Prioridad alta" />
               </div>
 
-              {/* Phase timeline bar */}
               <PhaseTimeline
                 phase1={plan.phase1Duration}
                 phase2={plan.phase2Duration}
@@ -443,23 +432,21 @@ export default function Results() {
         </div>
       </section>
 
-      {/* ================================================================ */}
       {/* SECTION 2: PRIORITIES */}
-      {/* ================================================================ */}
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Tus Prioridades</h2>
-          <p className="text-gray-600 mt-1 mb-6">
-            Ordenadas por importancia para tu preparación
+          <h2 className="text-xl sm:text-2xl font-bold text-black">Tus Prioridades</h2>
+          <p className="text-muted mt-1 mb-6">
+            Ordenadas por importancia para tu preparacion
           </p>
 
           {noPriorities ? (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
               <svg className="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <h3 className="font-semibold text-green-800 text-lg mb-1">
-                ¡Enhorabuena!
+                Enhorabuena!
               </h3>
               <p className="text-green-700 text-sm">
                 {plan.message || 'No tienes limitaciones significativas. Puedes comenzar con un plan de mantenimiento general.'}
@@ -480,39 +467,37 @@ export default function Results() {
         </div>
       </section>
 
-      {/* ================================================================ */}
       {/* SECTION 3: TIMELINE */}
-      {/* ================================================================ */}
       {!noPriorities && (
-        <section className="bg-gray-100 px-4 py-8 md:py-12">
+        <section className="bg-surface px-4 py-8 md:py-12">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Tu Recorrido Semana a Semana</h2>
-            <p className="text-gray-600 mt-1 mb-6">
-              Así se estructura tu programa personalizado
+            <h2 className="text-xl sm:text-2xl font-bold text-black">Tu Recorrido Semana a Semana</h2>
+            <p className="text-muted mt-1 mb-6">
+              Asi se estructura tu programa personalizado
             </p>
 
             <div className="space-y-4">
               <PhaseBlock
-                color="blue"
-                name="Fase 1 — Evaluación"
+                color="black"
+                name="Fase 1 — Evaluacion"
                 weekRange={`Semanas ${phase1Start}-${phase1Start + plan.phase1Duration - 1}`}
-                description="Establecemos tu línea base y confirmamos los resultados de tus pruebas iniciales."
+                description="Establecemos tu linea base y confirmamos los resultados de tus pruebas iniciales."
                 weeks={getPhase1Weeks(phase1Start)}
                 defaultExpanded={true}
               />
               <PhaseBlock
-                color="green"
+                color="orange"
                 name="Fase 2 — Fundamentos"
                 weekRange={`Semanas ${phase2Start}-${phase2Start + plan.phase2Duration - 1}`}
-                description="Corregimos tus limitaciones con un plan progresivo de movilidad, activación y fuerza."
+                description="Corregimos tus limitaciones con un plan progresivo de movilidad, activacion y fuerza."
                 weeks={getPhase2Weeks(phase2Start, plan.phase2Duration)}
                 defaultExpanded={false}
               />
               <PhaseBlock
-                color="orange"
-                name="Fase 3 — Transición a correr"
+                color="pink"
+                name="Fase 3 — Transicion a correr"
                 weekRange={`Semanas ${phase3Start}-${phase3Start + plan.phase3Duration - 1}`}
-                description="Introducción gradual a la carrera con intervalos de caminar/trotar progresivos."
+                description="Introduccion gradual a la carrera con intervalos de caminar/trotar progresivos."
                 weeks={getPhase3Weeks(phase3Start)}
                 defaultExpanded={false}
               />
@@ -521,16 +506,14 @@ export default function Results() {
         </section>
       )}
 
-      {/* ================================================================ */}
       {/* SECTION 4: CTA */}
-      {/* ================================================================ */}
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-            ¿Estás listo para empezar?
+          <h2 className="text-xl sm:text-2xl font-bold text-black">
+            Estas listo para empezar?
           </h2>
-          <p className="text-gray-600 mt-2 mb-8">
-            12 semanas de preparación = 10-20 años corriendo sin lesiones
+          <p className="text-muted mt-2 mb-8">
+            12 semanas de preparacion = 10-20 anos corriendo sin lesiones
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-3">
@@ -548,11 +531,11 @@ export default function Results() {
               className="w-full sm:w-auto"
               onClick={() => navigate('/assessment')}
             >
-              Repetir Evaluación
+              Repetir Evaluacion
             </Button>
             <button
               onClick={() => navigate('/exercises')}
-              className="w-full sm:w-auto px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+              className="w-full sm:w-auto px-6 py-3 bg-white border-2 border-black text-black rounded-xl font-semibold hover:bg-black hover:text-white transition-all duration-300"
             >
               Ver Biblioteca Completa
             </button>

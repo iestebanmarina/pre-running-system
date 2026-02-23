@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import Input from '../ui/Input'
 import Button from '../ui/Button'
+import TestInstructions from './TestInstructions'
 
 const BalanceTest = ({ onComplete, initialData = {} }) => {
   const [balanceRight, setBalanceRight] = useState(initialData.balance_right || '')
@@ -13,7 +14,7 @@ const BalanceTest = ({ onComplete, initialData = {} }) => {
 
     if (num >= 60) return { text: 'BUENO', color: 'text-green-600' }
     if (num >= 40 && num < 60) return { text: 'ACEPTABLE', color: 'text-yellow-600' }
-    return { text: 'DÉFICIT ESTABILIDAD', color: 'text-red-600' }
+    return { text: 'DEFICIT ESTABILIDAD', color: 'text-red-600' }
   }
 
   const isValid = (value) => {
@@ -48,20 +49,37 @@ const BalanceTest = ({ onComplete, initialData = {} }) => {
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-black mb-2">
           Test #7: Balance y Estabilidad
         </h2>
-        <p className="text-gray-600">
-          Evalúa tu equilibrio unipodal. Mantente sobre un pie con los ojos abiertos y
-          cronometra cuánto tiempo puedes mantener el equilibrio sin apoyar el otro pie.
+        <p className="text-muted">
+          Evalua tu equilibrio unipodal. Mantente sobre un pie con los ojos abiertos y
+          cronometra cuanto tiempo puedes mantener el equilibrio sin apoyar el otro pie.
         </p>
       </div>
 
-      <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-        <p className="text-gray-600 text-center px-4">
-          Video: Test de Equilibrio Unipodal (próximamente)
-        </p>
-      </div>
+      <TestInstructions
+        illustrationText="De pie sobre una pierna, brazos a los lados, cronometro corriendo"
+        steps={[
+          'Parate descalzo sobre tu pierna derecha',
+          'Flexiona ligeramente la rodilla de apoyo',
+          'Levanta el pie izquierdo del suelo (no importa cuanto)',
+          'Manten los brazos a los lados (no apoyes en nada)',
+          'Cronometra cuanto tiempo aguantas SIN poner el otro pie en el suelo, tocar algo para equilibrarte, o mover el pie de apoyo',
+          'Maximo 60 segundos por pierna',
+          'Repite con pierna izquierda'
+        ]}
+        tips={[
+          'Mira un punto fijo en la pared (ayuda al equilibrio)',
+          'Esta bien tambalearse, cuenta mientras el pie no toque',
+          'Haz 2-3 intentos y quedate con el mejor tiempo'
+        ]}
+        warnings={[
+          'Apoyarse en algo (debe ser sin apoyo)',
+          'Rodilla de apoyo completamente recta (flexiona ligeramente)',
+          'Contar despues de tocar el suelo'
+        ]}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">

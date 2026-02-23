@@ -1,52 +1,35 @@
 import PropTypes from 'prop-types';
 
-/**
- * ExerciseCard Component
- *
- * Componente para mostrar un ejercicio individual en formato card.
- * Dos variantes: 'compact' para listas y 'full' para vista detallada.
- *
- * @param {Object} exercise - Objeto completo del ejercicio de Supabase
- * @param {string} variant - 'compact' | 'full' (default: 'compact')
- * @param {Function} onSelect - Función opcional para manejar click en el ejercicio
- */
 export default function ExerciseCard({ exercise, variant = 'compact', onSelect }) {
-  // Mapeo de categorías a colores y emojis
   const categoryConfig = {
     mobility: {
-      color: 'bg-blue-100 text-blue-800 border-blue-200',
-      label: 'Movilidad',
-      emoji: '🔄'
+      color: 'bg-accent-orange/10 text-accent-orange border-accent-orange/20',
+      label: 'Movilidad'
     },
     activation: {
-      color: 'bg-green-100 text-green-800 border-green-200',
-      label: 'Activación',
-      emoji: '⚡'
+      color: 'bg-accent-pink/10 text-accent-pink border-accent-pink/20',
+      label: 'Activacion'
     },
     strength: {
-      color: 'bg-red-100 text-red-800 border-red-200',
-      label: 'Fuerza',
-      emoji: '💪'
+      color: 'bg-black/10 text-black border-black/20',
+      label: 'Fuerza'
     },
     capacity: {
-      color: 'bg-purple-100 text-purple-800 border-purple-200',
-      label: 'Capacidad',
-      emoji: '🏃'
+      color: 'bg-accent-orange/10 text-accent-orange border-accent-orange/20',
+      label: 'Capacidad'
     }
   };
 
-  // Mapeo de targets a español
   const targetLabels = {
     ankle: 'Tobillo',
     hip: 'Cadera',
-    glute: 'Glúteos',
+    glute: 'Gluteos',
     core: 'Core',
     posterior_chain: 'Cadena Posterior',
     balance: 'Equilibrio',
     full_body: 'Cuerpo Completo'
   };
 
-  // Mapeo de dificultad a español
   const difficultyLabels = {
     beginner: 'Principiante',
     intermediate: 'Intermedio',
@@ -57,14 +40,12 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
   const targetLabel = targetLabels[exercise.target] || exercise.target;
   const difficultyLabel = difficultyLabels[exercise.difficulty] || exercise.difficulty;
 
-  // Función para truncar texto
   const truncateText = (text, maxLength) => {
     if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
-  // Handler para click
   const handleClick = () => {
     if (onSelect) {
       onSelect(exercise);
@@ -75,8 +56,8 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
     <div
       onClick={handleClick}
       className={`
-        bg-white border border-gray-200 rounded-lg shadow-sm
-        ${onSelect ? 'cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all duration-200' : ''}
+        bg-white border border-border rounded-2xl shadow-card
+        ${onSelect ? 'cursor-pointer hover:shadow-card-hover hover:scale-[1.02] transition-all duration-300' : ''}
         ${variant === 'full' ? 'p-6' : 'p-4'}
       `}
     >
@@ -89,45 +70,44 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
               ${categoryInfo.color}
             `}
           >
-            <span>{categoryInfo.emoji}</span>
             <span>{categoryInfo.label}</span>
           </span>
 
           {variant === 'full' && (
-            <span className="text-xs text-gray-500 font-medium">
+            <span className="text-xs text-muted font-medium">
               ID: {exercise.id}
             </span>
           )}
         </div>
 
-        <h3 className={`font-semibold text-gray-900 ${variant === 'full' ? 'text-xl' : 'text-base'}`}>
+        <h3 className={`font-semibold text-black ${variant === 'full' ? 'text-xl' : 'text-base'}`}>
           {exercise.name_es}
         </h3>
       </div>
 
-      {/* Metadata: Target + Duración + Dificultad */}
-      <div className="flex flex-wrap gap-3 mb-3 text-sm text-gray-600">
+      {/* Metadata: Target + Duracion + Dificultad */}
+      <div className="flex flex-wrap gap-3 mb-3 text-sm text-muted">
         <span className="flex items-center gap-1">
-          🎯 {targetLabel}
+          {targetLabel}
         </span>
         <span className="flex items-center gap-1">
-          ⏱️ {exercise.duration_minutes} min
+          {exercise.duration_minutes} min
         </span>
         <span className="flex items-center gap-1">
-          📊 {difficultyLabel}
+          {difficultyLabel}
         </span>
       </div>
 
-      {/* Descripción */}
-      <p className={`text-gray-700 ${variant === 'full' ? 'text-base mb-4' : 'text-sm mb-2'}`}>
+      {/* Descripcion */}
+      <p className={`text-muted ${variant === 'full' ? 'text-base mb-4' : 'text-sm mb-2'}`}>
         {variant === 'compact'
           ? truncateText(exercise.description, 120)
           : exercise.description}
       </p>
 
-      {/* COMPACT: Solo mostrar lo básico */}
+      {/* COMPACT: Solo mostrar lo basico */}
       {variant === 'compact' && (
-        <div className="text-xs text-gray-500 mt-2">
+        <div className="text-xs text-muted mt-2">
           Click para ver detalles
         </div>
       )}
@@ -136,11 +116,10 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
       {variant === 'full' && (
         <div className="space-y-4 mt-4">
           {/* Video Placeholder */}
-          <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center border border-gray-200">
+          <div className="bg-surface rounded-xl h-48 flex items-center justify-center border border-border">
             <div className="text-center">
-              <span className="text-4xl mb-2 block">📹</span>
-              <p className="text-gray-600 font-medium">Video próximamente</p>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="text-muted font-medium">Video proximamente</p>
+              <p className="text-muted text-sm mt-1">
                 {exercise.video_url ? 'URL disponible' : 'Sin video'}
               </p>
             </div>
@@ -148,13 +127,13 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
 
           {/* Sets/Reps o Hold Time */}
           {(exercise.sets_reps || exercise.hold_time) && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <h4 className="font-semibold text-blue-900 text-sm mb-1">
-                📝 Dosificación
+            <div className="bg-accent-orange/5 border border-accent-orange/20 rounded-xl p-3">
+              <h4 className="font-semibold text-black text-sm mb-1">
+                Dosificacion
               </h4>
-              <p className="text-blue-800 text-sm">
+              <p className="text-accent-orange text-sm">
                 {exercise.sets_reps && <span>{exercise.sets_reps}</span>}
-                {exercise.sets_reps && exercise.hold_time && <span> • </span>}
+                {exercise.sets_reps && exercise.hold_time && <span> - </span>}
                 {exercise.hold_time && <span>Mantener: {exercise.hold_time}</span>}
               </p>
             </div>
@@ -163,16 +142,16 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
           {/* Instrucciones */}
           {exercise.instructions && exercise.instructions.length > 0 && (
             <div>
-              <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                📋 Instrucciones
+              <h4 className="font-semibold text-black mb-2">
+                Instrucciones
               </h4>
               <ol className="space-y-2">
                 {exercise.instructions.map((instruction, index) => (
                   <li key={index} className="flex gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                    <span className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-accent-orange to-accent-pink text-white rounded-full flex items-center justify-center text-sm font-semibold">
                       {index + 1}
                     </span>
-                    <span className="text-gray-700 text-sm pt-0.5">{instruction}</span>
+                    <span className="text-muted text-sm pt-0.5">{instruction}</span>
                   </li>
                 ))}
               </ol>
@@ -181,14 +160,14 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
 
           {/* Errores Comunes */}
           {exercise.common_mistakes && exercise.common_mistakes.length > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="font-semibold text-yellow-900 mb-2 flex items-center gap-2">
-                ⚠️ Errores Comunes
+            <div className="bg-accent-pink/5 border border-accent-pink/20 rounded-xl p-4">
+              <h4 className="font-semibold text-black mb-2">
+                Errores Comunes
               </h4>
               <ul className="space-y-1.5">
                 {exercise.common_mistakes.map((mistake, index) => (
-                  <li key={index} className="flex gap-2 text-yellow-800 text-sm">
-                    <span className="flex-shrink-0">•</span>
+                  <li key={index} className="flex gap-2 text-muted text-sm">
+                    <span className="flex-shrink-0">-</span>
                     <span>{mistake}</span>
                   </li>
                 ))}
@@ -198,14 +177,14 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
 
           {/* Equipamiento */}
           {exercise.equipment && exercise.equipment.length > 0 && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                🏋️ Equipamiento Necesario
+            <div className="bg-surface border border-border rounded-xl p-4">
+              <h4 className="font-semibold text-black mb-2">
+                Equipamiento Necesario
               </h4>
               <ul className="space-y-1.5">
                 {exercise.equipment.map((item, index) => (
-                  <li key={index} className="flex gap-2 text-gray-700 text-sm">
-                    <span className="flex-shrink-0">•</span>
+                  <li key={index} className="flex gap-2 text-muted text-sm">
+                    <span className="flex-shrink-0">-</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -214,23 +193,23 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
           )}
 
           {/* Metadata adicional */}
-          <div className="border-t border-gray-200 pt-4 mt-4">
+          <div className="border-t border-border pt-4 mt-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-500 block">Categoría</span>
-                <span className="font-medium text-gray-900">{categoryInfo.label}</span>
+                <span className="text-muted block">Categoria</span>
+                <span className="font-medium text-black">{categoryInfo.label}</span>
               </div>
               <div>
-                <span className="text-gray-500 block">Target</span>
-                <span className="font-medium text-gray-900">{targetLabel}</span>
+                <span className="text-muted block">Target</span>
+                <span className="font-medium text-black">{targetLabel}</span>
               </div>
               <div>
-                <span className="text-gray-500 block">Duración</span>
-                <span className="font-medium text-gray-900">{exercise.duration_minutes} minutos</span>
+                <span className="text-muted block">Duracion</span>
+                <span className="font-medium text-black">{exercise.duration_minutes} minutos</span>
               </div>
               <div>
-                <span className="text-gray-500 block">Dificultad</span>
-                <span className="font-medium text-gray-900">{difficultyLabel}</span>
+                <span className="text-muted block">Dificultad</span>
+                <span className="font-medium text-black">{difficultyLabel}</span>
               </div>
             </div>
           </div>

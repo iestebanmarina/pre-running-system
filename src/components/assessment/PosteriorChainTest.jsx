@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import Button from '../ui/Button'
+import TestInstructions from './TestInstructions'
 
 const PosteriorChainTest = ({ onComplete, initialData = {} }) => {
   const [flexibility, setFlexibility] = useState(initialData.posterior_chain_flexibility || null)
@@ -17,9 +18,9 @@ const PosteriorChainTest = ({ onComplete, initialData = {} }) => {
 
     switch (value) {
       case 'toes': return { text: 'FLEXIBLE', color: 'text-green-600' }
-      case 'shins': return { text: 'MODERADAMENTE RÍGIDO', color: 'text-yellow-600' }
-      case 'knees': return { text: 'RÍGIDO', color: 'text-red-600' }
-      case 'thighs': return { text: 'MUY RÍGIDO', color: 'text-red-600' }
+      case 'shins': return { text: 'MODERADAMENTE RIGIDO', color: 'text-yellow-600' }
+      case 'knees': return { text: 'RIGIDO', color: 'text-red-600' }
+      case 'thighs': return { text: 'MUY RIGIDO', color: 'text-red-600' }
       default: return null
     }
   }
@@ -37,24 +38,40 @@ const PosteriorChainTest = ({ onComplete, initialData = {} }) => {
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-black mb-2">
           Test #5: Flexibilidad de Cadena Posterior
         </h2>
-        <p className="text-gray-600">
-          Evalúa la flexibilidad de tu cadena posterior con el test de toe touch. De pie con
-          piernas rectas, intenta tocar el suelo y registra hasta dónde llegas.
+        <p className="text-muted">
+          Evalua la flexibilidad de tu cadena posterior con el test de toe touch. De pie con
+          piernas rectas, intenta tocar el suelo y registra hasta donde llegas.
         </p>
       </div>
 
-      <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-        <p className="text-gray-600 text-center px-4">
-          Video: Test de Toe Touch (próximamente)
-        </p>
-      </div>
+      <TestInstructions
+        illustrationText="De pie, inclinado hacia adelante con piernas rectas intentando tocar el suelo"
+        steps={[
+          'Parate descalzo con pies juntos',
+          'Piernas completamente rectas (rodillas no dobladas)',
+          'Inclinate hacia adelante dejando brazos colgar',
+          'Intenta tocar el suelo con las manos',
+          'NO fuerces, solo ve hasta donde llegues comodamente',
+          'Hasta donde llegan tus dedos? Tocas los dedos de los pies o mas alla? Llegas a tus espinillas? Solo a tus rodillas? Te quedas en los muslos?'
+        ]}
+        tips={[
+          'Rodillas SIEMPRE rectas (no trampa)',
+          'Relajate y respira profundo',
+          'No rebotes, solo manten la posicion'
+        ]}
+        warnings={[
+          'Doblar las rodillas (invalida el test)',
+          'Forzar con dolor (solo llega comodo)',
+          'Compararte con otros (cada cuerpo es diferente)'
+        ]}
+      />
 
       <div className="max-w-md space-y-2">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          ¿Hasta dónde llegas? <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-black mb-3">
+          Hasta donde llegas? <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2">
           {options.map((option) => (
@@ -62,14 +79,14 @@ const PosteriorChainTest = ({ onComplete, initialData = {} }) => {
               key={option.value}
               type="button"
               onClick={() => setFlexibility(option.value)}
-              className={`w-full p-4 text-left border-2 rounded-lg transition-all ${
+              className={`w-full p-4 text-left border-2 rounded-xl transition-all duration-300 ${
                 flexibility === option.value
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400'
+                  ? 'border-accent-orange bg-[#FFF5F0]'
+                  : 'border-border hover:border-muted'
               }`}
             >
-              <div className="font-medium text-gray-900">{option.label}</div>
-              <div className="text-sm text-gray-600 mt-1">{option.description}</div>
+              <div className="font-medium text-black">{option.label}</div>
+              <div className="text-sm text-muted mt-1">{option.description}</div>
             </button>
           ))}
         </div>
