@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
+import ExerciseModal from './ExerciseModal';
 
 export default function ExerciseCard({ exercise, variant = 'compact', onSelect }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const categoryConfig = {
     mobility: {
       color: 'bg-accent-orange/10 text-accent-orange border-accent-orange/20',
@@ -47,17 +50,17 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
   };
 
   const handleClick = () => {
-    if (onSelect) {
-      onSelect(exercise);
-    }
+    setIsModalOpen(true);
+    if (onSelect) onSelect(exercise);
   };
 
   return (
+    <>
     <div
       onClick={handleClick}
       className={`
         bg-white border border-border rounded-2xl shadow-card
-        ${onSelect ? 'cursor-pointer hover:shadow-card-hover hover:scale-[1.02] transition-all duration-300' : ''}
+        cursor-pointer hover:shadow-card-hover hover:scale-[1.02] transition-all duration-300
         ${variant === 'full' ? 'p-6' : 'p-4'}
       `}
     >
@@ -216,6 +219,13 @@ export default function ExerciseCard({ exercise, variant = 'compact', onSelect }
         </div>
       )}
     </div>
+
+    <ExerciseModal
+      exercise={exercise}
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+    />
+    </>
   );
 }
 
