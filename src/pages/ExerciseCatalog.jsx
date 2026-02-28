@@ -14,7 +14,7 @@ export default function ExerciseCatalog() {
   const categories = [
     { id: 'all', label: 'Todos' },
     { id: 'mobility', label: 'Movilidad' },
-    { id: 'activation', label: 'Activacion' },
+    { id: 'activation', label: 'Activación' },
     { id: 'strength', label: 'Fuerza' },
     { id: 'capacity', label: 'Capacidad' }
   ];
@@ -65,7 +65,7 @@ export default function ExerciseCatalog() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white">
-                Biblioteca de Ejercicios
+                Biblioteca de ejercicios
               </h1>
               <p className="mt-1 text-sm text-white/70">
                 {exercises.length} ejercicios disponibles
@@ -147,10 +147,10 @@ export default function ExerciseCatalog() {
         {!isLoading && !error && filteredExercises.length === 0 && (
           <div className="bg-surface border border-border rounded-2xl p-12 text-center">
             <h3 className="text-black font-semibold text-xl mb-2">
-              No hay ejercicios en esta categoria todavia
+              No hay ejercicios en esta categoría todavía
             </h3>
             <p className="text-muted mb-6">
-              Selecciona otra categoria o vuelve a "Todos"
+              Selecciona otra categoría o vuelve a "Todos"
             </p>
             <button
               onClick={() => setSelectedCategory('all')}

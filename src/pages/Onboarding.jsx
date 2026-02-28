@@ -4,20 +4,20 @@ import Button from '../components/ui/Button'
 
 const steps = [
   {
-    title: 'Como Funciona el Assessment',
+    title: 'Cómo funciona el assessment',
     content: (
       <>
         <p className="text-muted mb-6">
-          Realizaras <strong className="text-black">7 tests rapidos</strong> para evaluar las areas clave de tu cuerpo:
+          Realizarás <strong className="text-black">7 tests rápidos</strong> para evaluar las áreas clave de tu cuerpo:
         </p>
         <ol className="space-y-3 text-left">
           {[
             'Movilidad de tobillo',
-            'Extension de cadera',
-            'Activacion de gluteos',
+            'Extensión de cadera',
+            'Activación de glúteos',
             'Estabilidad del core',
             'Flexibilidad posterior',
-            'Capacidad aerobica',
+            'Capacidad aeróbica',
             'Equilibrio y estabilidad',
           ].map((test, i) => (
             <li key={i} className="flex items-center gap-3">
@@ -29,19 +29,19 @@ const steps = [
           ))}
         </ol>
         <div className="mt-6 bg-surface rounded-xl p-4 text-center border border-border">
-          <span className="text-black font-semibold">Duracion estimada: 15 minutos</span>
+          <span className="text-black font-semibold">Duración estimada: 15 minutos</span>
         </div>
       </>
     ),
   },
   {
-    title: 'Lo Que Necesitas',
+    title: 'Lo que necesitas',
     content: (
       <div className="grid grid-cols-2 gap-4">
         {[
           { num: '1', label: 'Una pared lisa', desc: 'Para el test de tobillo' },
-          { num: '2', label: 'Tu telefono', desc: 'Para cronometrar' },
-          { num: '3', label: 'Ropa comoda', desc: 'Para moverte libremente' },
+          { num: '2', label: 'Tu teléfono', desc: 'Para cronometrar' },
+          { num: '3', label: 'Ropa cómoda', desc: 'Para moverte libremente' },
           { num: '4', label: '15 minutos', desc: 'Sin interrupciones' },
         ].map((item, i) => (
           <div key={i} className="bg-surface rounded-2xl p-5 text-center border border-border">
@@ -56,14 +56,14 @@ const steps = [
     ),
   },
   {
-    title: 'Instrucciones Importantes',
+    title: 'Instrucciones importantes',
     content: (
       <ul className="space-y-4 text-left">
         {[
-          { num: '1', text: 'Se honesto con tus resultados. No hay respuestas "buenas" o "malas", solo informacion para personalizar tu plan.' },
-          { num: '2', text: 'Si algo duele, no fuerces. Anota la limitacion y continua con el siguiente test.' },
-          { num: '3', text: 'Cada test incluye un video explicativo. Miralos antes de realizar la prueba.' },
-          { num: '4', text: 'Puedes pausar y retomar en cualquier momento. Tu progreso se guarda automaticamente.' },
+          { num: '1', text: 'Sé honesto con tus resultados. No hay respuestas "buenas" o "malas", solo información para personalizar tu plan.' },
+          { num: '2', text: 'Si algo duele, no fuerces. Anota la limitación y continúa con el siguiente test.' },
+          { num: '3', text: 'Cada test incluye un video explicativo. Míralos antes de realizar la prueba.' },
+          { num: '4', text: 'Puedes pausar y retomar en cualquier momento. Tu progreso se guarda automáticamente.' },
         ].map((item, i) => (
           <li key={i} className="flex gap-3">
             <span className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
@@ -123,7 +123,7 @@ export default function Onboarding() {
               onClick={() => navigate('/assessment')}
               className="bg-gradient-to-r from-accent-orange to-accent-pink text-white font-bold px-6 py-3 rounded-xl hover:scale-[1.02] transition-all duration-300"
             >
-              Empezar Evaluacion
+              Empezar evaluación
             </button>
           ) : (
             <Button onClick={() => setCurrentStep(currentStep + 1)}>

@@ -8,7 +8,7 @@ const AerobicCapacityTest = ({ onComplete, initialData = {} }) => {
 
   const options = [
     {
-      label: '45 minutos comodo',
+      label: '45 minutos cómodo',
       value: '45min_easy',
       description: 'Puedo caminar 45 minutos sin fatigarme'
     },
@@ -49,37 +49,37 @@ const AerobicCapacityTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #6: Capacidad Aerobica
+          Test #6: Capacidad aeróbica
         </h2>
         <p className="text-muted">
-          Evalua tu capacidad aerobica base con el test de caminata de 45 minutos. Camina a
-          paso constante y evalua tu nivel de fatiga.
+          Evalúa tu capacidad aeróbica base con el test de caminata de 45 minutos. Camina a
+          paso constante y evalúa tu nivel de fatiga.
         </p>
       </div>
 
       <TestInstructions
         illustrationText="Persona caminando a paso activo durante 45 minutos"
         steps={[
-          'Piensa en tu ultima caminata de 45 minutos (o haz una ahora)',
-          'Ritmo: Conversacional pero activo (no paseo, caminar con proposito)',
-          'Evalua como te sentiste al terminar',
-          'Selecciona la opcion que mejor describe tu experiencia'
+          'Piensa en tu última caminata de 45 minutos (o haz una ahora)',
+          'Ritmo: conversacional pero activo (no paseo, caminar con propósito)',
+          'Evalúa cómo te sentiste al terminar',
+          'Selecciona la opción que mejor describe tu experiencia'
         ]}
         tips={[
           'No corras, solo camina activamente',
           '"Conversacional" = puedes hablar pero no cantar',
-          'Si no has caminado 45min recientemente, hazlo para saber'
+          'Si no has caminado 45 min recientemente, hazlo para saber'
         ]}
         warnings={[
           'Confundir caminar con correr',
-          'Ir demasiado despacio (paseo vs caminata activa)',
-          'No dar tiempo suficiente al test (menos de 30min)'
+          'Ir demasiado despacio (paseo vs. caminata activa)',
+          'No dar tiempo suficiente al test (menos de 30 min)'
         ]}
       />
 
       <div className="max-w-md space-y-2">
         <label className="block text-sm font-medium text-black mb-3">
-          Como te sientes durante una caminata? <span className="text-red-500">*</span>
+          ¿Cómo te sientes durante una caminata? <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2">
           {options.map((option) => (

@@ -19,8 +19,8 @@ const PosteriorChainTest = ({ onComplete, initialData = {} }) => {
     switch (value) {
       case 'toes': return { text: 'FLEXIBLE', color: 'text-green-600' }
       case 'shins': return { text: 'MODERADAMENTE RIGIDO', color: 'text-yellow-600' }
-      case 'knees': return { text: 'RIGIDO', color: 'text-red-600' }
-      case 'thighs': return { text: 'MUY RIGIDO', color: 'text-red-600' }
+      case 'knees': return { text: 'RÍGIDO', color: 'text-red-600' }
+      case 'thighs': return { text: 'MUY RÍGIDO', color: 'text-red-600' }
       default: return null
     }
   }
@@ -39,39 +39,39 @@ const PosteriorChainTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #5: Flexibilidad de Cadena Posterior
+          Test #5: Flexibilidad de cadena posterior
         </h2>
         <p className="text-muted">
-          Evalua la flexibilidad de tu cadena posterior con el test de toe touch. De pie con
-          piernas rectas, intenta tocar el suelo y registra hasta donde llegas.
+          Evalúa la flexibilidad de tu cadena posterior con el test de toe touch. De pie con
+          piernas rectas, intenta tocar el suelo y registra hasta dónde llegas.
         </p>
       </div>
 
       <TestInstructions
         illustrationText="De pie, inclinado hacia adelante con piernas rectas intentando tocar el suelo"
         steps={[
-          'Parate descalzo con pies juntos',
+          'Párate descalzo con pies juntos',
           'Piernas completamente rectas (rodillas no dobladas)',
-          'Inclinate hacia adelante dejando brazos colgar',
+          'Inclínate hacia delante dejando los brazos colgar',
           'Intenta tocar el suelo con las manos',
-          'NO fuerces, solo ve hasta donde llegues comodamente',
-          'Hasta donde llegan tus dedos? Tocas los dedos de los pies o mas alla? Llegas a tus espinillas? Solo a tus rodillas? Te quedas en los muslos?'
+          'NO fuerces, solo ve hasta donde llegues cómodamente',
+          '¿Hasta dónde llegan tus dedos? ¿Tocas los dedos de los pies o más allá? ¿Llegas a tus espinillas? ¿Solo a tus rodillas? ¿Te quedas en los muslos?'
         ]}
         tips={[
-          'Rodillas SIEMPRE rectas (no trampa)',
-          'Relajate y respira profundo',
-          'No rebotes, solo manten la posicion'
+          'Rodillas SIEMPRE rectas (sin trampa)',
+          'Relájate y respira profundo',
+          'No rebotes, solo mantén la posición'
         ]}
         warnings={[
           'Doblar las rodillas (invalida el test)',
-          'Forzar con dolor (solo llega comodo)',
+          'Forzar con dolor (solo llega cómodo)',
           'Compararte con otros (cada cuerpo es diferente)'
         ]}
       />
 
       <div className="max-w-md space-y-2">
         <label className="block text-sm font-medium text-black mb-3">
-          Hasta donde llegas? <span className="text-red-500">*</span>
+          ¿Hasta dónde llegas? <span className="text-red-500">*</span>
         </label>
         <div className="space-y-2">
           {options.map((option) => (

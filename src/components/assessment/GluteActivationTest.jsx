@@ -10,19 +10,19 @@ const GluteActivationTest = ({ onComplete, initialData = {} }) => {
   // Glute activation options
   const options = [
     {
-      label: 'Gluteo primero',
+      label: 'Glúteo primero',
       value: 'glute_first',
-      description: 'El gluteo se contrae antes que los isquiotibiales'
+      description: 'El glúteo se contrae antes que los isquiotibiales'
     },
     {
-      label: 'Simultaneo',
+      label: 'Simultáneo',
       value: 'simultaneous',
-      description: 'Gluteo e isquiotibiales se contraen al mismo tiempo'
+      description: 'Glúteo e isquiotibiales se contraen al mismo tiempo'
     },
     {
       label: 'Isquiotibiales primero',
       value: 'hamstrings_first',
-      description: 'Los isquiotibiales se contraen antes que el gluteo'
+      description: 'Los isquiotibiales se contraen antes que el glúteo'
     }
   ]
 
@@ -36,7 +36,7 @@ const GluteActivationTest = ({ onComplete, initialData = {} }) => {
       case 'simultaneous':
         return { text: 'ACEPTABLE', color: 'text-yellow-600' }
       case 'hamstrings_first':
-        return { text: 'COMPENSACION', color: 'text-red-600' }
+        return { text: 'COMPENSACIÓN', color: 'text-red-600' }
       default:
         return null
     }
@@ -86,34 +86,34 @@ const GluteActivationTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #3: Activacion del Gluteo
+          Test #3: Activación del glúteo
         </h2>
         <p className="text-muted">
-          Evalua el patron de activacion muscular durante el puente. Observa que musculo
-          se contrae primero al elevar la cadera: gluteo o isquiotibiales.
+          Evalúa el patrón de activación muscular durante el puente. Observa qué músculo
+          se contrae primero al elevar la cadera: glúteo o isquiotibiales.
         </p>
       </div>
 
       <TestInstructions
-        illustrationText="Posicion de puente: boca arriba, caderas elevadas, manos palpando gluteo e isquiotibiales"
+        illustrationText="Posición de puente: boca arriba, caderas elevadas, manos palpando glúteo e isquiotibiales"
         steps={[
-          'Acuestate boca arriba con rodillas flexionadas',
+          'Acuéstate boca arriba con rodillas flexionadas',
           'Pies apoyados en el suelo a la anchura de caderas',
-          'Coloca una mano en tu gluteo derecho y otra en isquiotibiales (parte trasera del muslo)',
+          'Coloca una mano en tu glúteo derecho y otra en isquiotibiales (parte trasera del muslo)',
           'Levanta la cadera hacia arriba haciendo un puente',
-          'Que musculo sientes que se ACTIVA PRIMERO? Tu gluteo (nalga)? Ambos al mismo tiempo? Tus isquiotibiales (atras del muslo)?',
+          '¿Qué músculo sientes que se ACTIVA PRIMERO? ¿Tu glúteo (nalga)? ¿Ambos al mismo tiempo? ¿Tus isquiotibiales (detrás del muslo)?',
           'Baja y repite 3 veces para confirmar',
-          'Repite con atencion en lado izquierdo'
+          'Repite con atención en el lado izquierdo'
         ]}
         tips={[
-          'Ve despacio para sentir que se activa primero',
-          'Es normal sentir ambos musculos, pero cual primero?',
+          'Ve despacio para sentir qué se activa primero',
+          'Es normal sentir ambos músculos, ¿pero cuál primero?',
           'Repite 3 veces para estar seguro'
         ]}
         warnings={[
-          'Ir muy rapido (no sientes que activa primero)',
+          'Ir muy rápido (no sentirás qué se activa primero)',
           'Palpar en el lugar equivocado',
-          'Confundir isquiotibiales con gluteo'
+          'Confundir isquiotibiales con glúteo'
         ]}
       />
 
@@ -124,7 +124,7 @@ const GluteActivationTest = ({ onComplete, initialData = {} }) => {
           <GluteSelector
             value={rightGlute}
             onChange={setRightGlute}
-            label="Gluteo Derecho"
+            label="Glúteo derecho"
           />
           {rightInterpretation && (
             <p className={`text-sm font-medium ${rightInterpretation.color}`}>
@@ -138,7 +138,7 @@ const GluteActivationTest = ({ onComplete, initialData = {} }) => {
           <GluteSelector
             value={leftGlute}
             onChange={setLeftGlute}
-            label="Gluteo Izquierdo"
+            label="Glúteo izquierdo"
           />
           {leftInterpretation && (
             <p className={`text-sm font-medium ${leftInterpretation.color}`}>

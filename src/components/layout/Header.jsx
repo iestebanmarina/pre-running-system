@@ -7,9 +7,9 @@ export default function Header() {
   const location = useLocation()
 
   const navLinks = [
-    { label: 'Como Funciona', path: '/#solucion' },
+    { label: 'Cómo funciona', path: '/#solucion' },
     { label: 'Ejercicios', path: '/exercises' },
-    { label: 'Mi Plan', path: '/dashboard' },
+    { label: 'Mi plan', path: '/dashboard' },
   ]
 
   const handleNavClick = (path) => {

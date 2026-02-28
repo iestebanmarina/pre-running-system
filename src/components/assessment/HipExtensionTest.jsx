@@ -10,7 +10,7 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
   // Hip extension options (visual descriptors mapped to degrees)
   const options = [
     { label: 'Muslo elevado', value: -10, description: 'Por encima de la horizontal' },
-    { label: 'Muslo horizontal', value: 0, description: 'En linea con el cuerpo' },
+    { label: 'Muslo horizontal', value: 0, description: 'En línea con el cuerpo' },
     { label: 'Muslo bajo horizontal', value: 15, description: 'Por debajo de la horizontal' }
   ]
 
@@ -19,13 +19,13 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
     if (value === null) return null
 
     if (value < -5) {
-      return { text: 'LIMITACION SEVERA', color: 'text-red-600' }
+      return { text: 'LIMITACIÓN SEVERA', color: 'text-red-600' }
     } else if (value >= -5 && value < 0) {
-      return { text: 'LIMITACION MODERADA', color: 'text-yellow-600' }
+      return { text: 'LIMITACIÓN MODERADA', color: 'text-yellow-600' }
     } else if (value === 0) {
       return { text: 'NEUTRAL', color: 'text-yellow-600' }
     } else {
-      return { text: 'OPTIMO', color: 'text-green-600' }
+      return { text: 'ÓPTIMO', color: 'text-green-600' }
     }
   }
 
@@ -73,22 +73,22 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #2: Extension de Cadera
+          Test #2: Extensión de cadera
         </h2>
         <p className="text-muted">
-          Evalua el rango de extension de cadera con el test de Thomas. Observa la posicion
-          del muslo cuando la rodilla opuesta esta flexionada contra el pecho.
+          Evalúa el rango de extensión de cadera con el test de Thomas. Observa la posición
+          del muslo cuando la rodilla opuesta está flexionada contra el pecho.
         </p>
       </div>
 
       <TestInstructions
         illustrationText="Acostado boca arriba en el borde de una mesa, pierna colgando"
         steps={[
-          'Acuestate boca arriba en el borde de una cama o mesa',
+          'Acuéstate boca arriba en el borde de una cama o mesa',
           'Deja que la pierna derecha cuelgue fuera del borde',
           'Abraza tu rodilla izquierda contra tu pecho',
           'Relaja la pierna derecha completamente',
-          'Observa la posicion del muslo derecho: esta ELEVADO (por encima de horizontal)? HORIZONTAL (paralelo al suelo)? BAJO (cae por debajo de horizontal)?',
+          'Observa la posición del muslo derecho: ¿está ELEVADO (por encima de la horizontal)? ¿HORIZONTAL (paralelo al suelo)? ¿BAJO (cae por debajo de la horizontal)?',
           'Repite con la otra pierna'
         ]}
         tips={[
@@ -98,7 +98,7 @@ const HipExtensionTest = ({ onComplete, initialData = {} }) => {
         ]}
         warnings={[
           'Tensar la pierna (debe estar relajada)',
-          'No abrazar bien la rodilla opuesta (afecta la medicion)',
+          'No abrazar bien la rodilla opuesta (afecta la medición)',
           'Mesa muy alta o muy baja'
         ]}
       />

@@ -14,11 +14,11 @@ const AnkleROMTest = ({ onComplete, initialData = {} }) => {
     if (isNaN(num)) return null
 
     if (num < 10) {
-      return { text: 'LIMITACION SEVERA', color: 'text-red-600' }
+      return { text: 'LIMITACIÓN SEVERA', color: 'text-red-600' }
     } else if (num >= 10 && num < 12) {
-      return { text: 'LIMITACION MODERADA', color: 'text-yellow-600' }
+      return { text: 'LIMITACIÓN MODERADA', color: 'text-yellow-600' }
     } else if (num >= 12 && num <= 15) {
-      return { text: 'OPTIMO', color: 'text-green-600' }
+      return { text: 'ÓPTIMO', color: 'text-green-600' }
     } else {
       return { text: 'EXCELENTE', color: 'text-accent-orange' }
     }
@@ -60,32 +60,32 @@ const AnkleROMTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #1: Rango de Movimiento del Tobillo
+          Test #1: Rango de movimiento del tobillo
         </h2>
         <p className="text-muted">
-          Mide la flexion dorsal del tobillo con el test de pared. Registra la distancia maxima
-          desde la punta del pie hasta la pared manteniendo el talon en el suelo.
+          Mide la flexión dorsal del tobillo con el test de pared. Registra la distancia máxima
+          desde la punta del pie hasta la pared manteniendo el talón en el suelo.
         </p>
       </div>
 
       <TestInstructions
-        illustrationText="Vista lateral: rodilla hacia la pared, talon en el suelo"
+        illustrationText="Vista lateral: rodilla hacia la pared, talón en el suelo"
         steps={[
-          'Parate descalzo frente a una pared',
-          'Coloca tu pie derecho a 10cm de la pared (usa tu mano como referencia)',
-          'Flexiona la rodilla hacia adelante intentando tocar la pared',
-          'Manten el talon SIEMPRE pegado al suelo',
-          'Si tu rodilla toca la pared, aleja el pie 1cm mas y repite',
-          'Continua hasta que NO puedas tocar sin despegar el talon',
-          'Mide la distancia final con una regla o tu movil'
+          'Párate descalzo frente a una pared',
+          'Coloca tu pie derecho a 10 cm de la pared (usa tu mano como referencia)',
+          'Flexiona la rodilla hacia delante intentando tocar la pared',
+          'Mantén el talón SIEMPRE pegado al suelo',
+          'Si tu rodilla toca la pared, aleja el pie 1 cm más y repite',
+          'Continúa hasta que NO puedas tocar sin despegar el talón',
+          'Mide la distancia final con una regla o tu móvil'
         ]}
         tips={[
-          'El talon debe estar completamente pegado al suelo',
+          'El talón debe estar completamente pegado al suelo',
           'Puedes poner un libro contra la pared para marcar el punto',
-          'Haz el test 2-3 veces por pierna para asegurar la medicion'
+          'Haz el test 2-3 veces por pierna para asegurar la medición'
         ]}
         warnings={[
-          'Despegar el talon (invalida la medicion)',
+          'Despegar el talón (invalida la medición)',
           'Rotar el pie hacia afuera (debe estar recto)',
           'Forzar con dolor (detente si duele)'
         ]}

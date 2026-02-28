@@ -130,7 +130,7 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
           {exercise.instructions && exercise.instructions.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-bold text-black mb-3">
-                Instrucciones Paso a Paso
+                Instrucciones paso a paso
               </h3>
               <ol className="space-y-2">
                 {exercise.instructions.map((step, idx) => (
@@ -151,7 +151,7 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
           {exercise.common_mistakes && exercise.common_mistakes.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-bold text-black mb-3">
-                Errores Comunes a Evitar
+                Errores comunes a evitar
               </h3>
               <div className="bg-white border-l-4 border-accent-pink p-4 rounded-r-lg">
                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
@@ -167,7 +167,7 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
           {exercise.equipment && exercise.equipment.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-bold text-black mb-3">
-                Equipamiento Necesario
+                Equipamiento necesario
               </h3>
               <div className="bg-white border-l-4 border-accent-orange p-4 rounded-r-lg">
                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
@@ -182,7 +182,7 @@ export default function ExerciseModal({ exercise, isOpen, onClose }) {
           {/* Video placeholder */}
           <div className="mb-6">
             <h3 className="text-lg font-bold text-black mb-3">
-              Demostración en Video
+              Demostración en video
             </h3>
             <div className="bg-surface rounded-2xl border border-border p-12 text-center">
               <svg className="w-16 h-16 mx-auto mb-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">

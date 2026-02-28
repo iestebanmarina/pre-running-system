@@ -11,7 +11,7 @@ import ExerciseCard from '../components/exercises/ExerciseCard'
 const MOCK_PLAN = {
   priorities: [
     {
-      area: 'Dorsiflexion del tobillo',
+      area: 'Dorsiflexión del tobillo',
       severity: 'HIGH',
       current: '8 cm',
       target: '13 cm',
@@ -19,10 +19,10 @@ const MOCK_PLAN = {
       exercises: ['ankle_wall_mobility', 'calf_stretch', 'dorsiflexion_active']
     },
     {
-      area: 'Activacion del gluteo',
+      area: 'Activación del glúteo',
       severity: 'HIGH',
       current: 'Isquiotibiales primero',
-      target: 'Gluteo primero',
+      target: 'Glúteo primero',
       weeklyMinutes: 105,
       exercises: ['clams', 'bridge', 'single_leg_bridge', 'fire_hydrants']
     },
@@ -134,7 +134,7 @@ function PhaseTimeline({ phase1, phase2, phase3 }) {
       </div>
       <div className="flex mt-2 text-xs text-muted">
         <div style={{ width: `${(phase1 / total) * 100}%` }} className="text-center">
-          <span className="font-medium text-black">Evaluacion</span>
+          <span className="font-medium text-black">Evaluación</span>
           <br />{phase1} sem
         </div>
         <div style={{ width: `${(phase2 / total) * 100}%` }} className="text-center">
@@ -142,7 +142,7 @@ function PhaseTimeline({ phase1, phase2, phase3 }) {
           <br />{phase2} sem
         </div>
         <div style={{ width: `${(phase3 / total) * 100}%` }} className="text-center">
-          <span className="font-medium text-accent-pink">Transicion</span>
+          <span className="font-medium text-accent-pink">Transición</span>
           <br />{phase3} sem
         </div>
       </div>
@@ -200,7 +200,7 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
           {/* Ejercicios Recomendados */}
           <div className="mt-4 border-t border-border pt-4">
             <h4 className="text-sm font-semibold text-black mb-3">
-              Ejercicios Recomendados
+              Ejercicios recomendados
             </h4>
 
             {loadingExercises ? (
@@ -224,7 +224,7 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
 
                 {priority.exercises?.length > 4 && (
                   <p className="text-xs text-muted mt-2">
-                    +{priority.exercises.length - 4} ejercicios mas
+                    +{priority.exercises.length - 4} ejercicios más
                   </p>
                 )}
               </>
@@ -242,8 +242,8 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
 
 function getPhase1Weeks(startWeek) {
   return [
-    { week: startWeek, description: 'Tests iniciales — Evaluacion completa de las 7 pruebas' },
-    { week: startWeek + 1, description: 'Repeticion tests base — Confirmar resultados iniciales' }
+    { week: startWeek, description: 'Tests iniciales — Evaluación completa de las 7 pruebas' },
+    { week: startWeek + 1, description: 'Repetición de tests base — Confirmar resultados iniciales' }
   ]
 }
 
@@ -253,11 +253,11 @@ function getPhase2Weeks(startWeek, duration) {
     const weekNum = startWeek + i
     let description
     if (i < 2) {
-      description = 'Movilidad + Activacion — Correccion de patrones basicos'
+      description = 'Movilidad + Activación — Corrección de patrones básicos'
     } else if (i < duration - 2) {
-      description = 'Movilidad + Activacion + Fuerza — Construccion progresiva'
+      description = 'Movilidad + Activación + Fuerza — Construcción progresiva'
     } else {
-      description = 'Fuerza + Capacidad — Preparacion para la transicion'
+      description = 'Fuerza + Capacidad — Preparación para la transición'
     }
     weeks.push({ week: weekNum, description })
   }
@@ -387,7 +387,7 @@ export default function Results() {
       {/* Mock data banner */}
       {!hasPlanData && (
         <div className="bg-surface border-b border-border px-4 py-3 text-center text-sm text-muted">
-          Mostrando datos de ejemplo. <button onClick={() => navigate('/assessment')} className="underline font-medium hover:text-black">Completa tu evaluacion</button> para ver tu plan personalizado.
+          Mostrando datos de ejemplo. <button onClick={() => navigate('/assessment')} className="underline font-medium hover:text-black">Completa tu evaluación</button> para ver tu plan personalizado.
         </div>
       )}
 
@@ -400,17 +400,17 @@ export default function Results() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Evaluacion completada
+              Evaluación completada
             </span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold text-white text-center">
-            Tu Plan Personalizado Pre-Running
+            Tu plan personalizado Pre-Running
           </h1>
           <p className="text-white/80 text-center mt-2">
             {noPriorities
-              ? 'Tu evaluacion muestra que estas en buena forma para empezar.'
-              : `Un programa de ${plan.totalWeeks} semanas disenado para tus necesidades especificas`
+              ? 'Tu evaluación muestra que estás en buena forma para empezar.'
+              : `Un programa de ${plan.totalWeeks} semanas diseñado para tus necesidades específicas`
             }
           </p>
 
@@ -418,7 +418,7 @@ export default function Results() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
                 <StatCard value={plan.totalWeeks} label="Semanas totales" />
-                <StatCard value={plan.priorities.length} label="Areas a trabajar" />
+                <StatCard value={plan.priorities.length} label="Áreas a trabajar" />
                 <StatCard value={highCount} label="Prioridad alta" />
               </div>
 
@@ -435,9 +435,9 @@ export default function Results() {
       {/* SECTION 2: PRIORITIES */}
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-black">Tus Prioridades</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black">Tus prioridades</h2>
           <p className="text-muted mt-1 mb-6">
-            Ordenadas por importancia para tu preparacion
+            Ordenadas por importancia para tu preparación
           </p>
 
           {noPriorities ? (
@@ -446,7 +446,7 @@ export default function Results() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <h3 className="font-semibold text-green-800 text-lg mb-1">
-                Enhorabuena!
+                ¡Enhorabuena!
               </h3>
               <p className="text-green-700 text-sm">
                 {plan.message || 'No tienes limitaciones significativas. Puedes comenzar con un plan de mantenimiento general.'}
@@ -471,17 +471,17 @@ export default function Results() {
       {!noPriorities && (
         <section className="bg-surface px-4 py-8 md:py-12">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-bold text-black">Tu Recorrido Semana a Semana</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-black">Tu recorrido semana a semana</h2>
             <p className="text-muted mt-1 mb-6">
-              Asi se estructura tu programa personalizado
+              Así se estructura tu programa personalizado
             </p>
 
             <div className="space-y-4">
               <PhaseBlock
                 color="black"
-                name="Fase 1 — Evaluacion"
+                name="Fase 1 — Evaluación"
                 weekRange={`Semanas ${phase1Start}-${phase1Start + plan.phase1Duration - 1}`}
-                description="Establecemos tu linea base y confirmamos los resultados de tus pruebas iniciales."
+                description="Establecemos tu línea base y confirmamos los resultados de tus pruebas iniciales."
                 weeks={getPhase1Weeks(phase1Start)}
                 defaultExpanded={true}
               />
@@ -489,15 +489,15 @@ export default function Results() {
                 color="orange"
                 name="Fase 2 — Fundamentos"
                 weekRange={`Semanas ${phase2Start}-${phase2Start + plan.phase2Duration - 1}`}
-                description="Corregimos tus limitaciones con un plan progresivo de movilidad, activacion y fuerza."
+                description="Corregimos tus limitaciones con un plan progresivo de movilidad, activación y fuerza."
                 weeks={getPhase2Weeks(phase2Start, plan.phase2Duration)}
                 defaultExpanded={false}
               />
               <PhaseBlock
                 color="pink"
-                name="Fase 3 — Transicion a correr"
+                name="Fase 3 — Transición a correr"
                 weekRange={`Semanas ${phase3Start}-${phase3Start + plan.phase3Duration - 1}`}
-                description="Introduccion gradual a la carrera con intervalos de caminar/trotar progresivos."
+                description="Introducción gradual a la carrera con intervalos de caminar/trotar progresivos."
                 weeks={getPhase3Weeks(phase3Start)}
                 defaultExpanded={false}
               />
@@ -510,10 +510,10 @@ export default function Results() {
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-black">
-            Estas listo para empezar?
+            ¿Estás listo para empezar?
           </h2>
           <p className="text-muted mt-2 mb-8">
-            12 semanas de preparacion = 10-20 anos corriendo sin lesiones
+            12 semanas de preparación = 10-20 años corriendo sin lesiones
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-3">
@@ -523,7 +523,7 @@ export default function Results() {
               className="w-full sm:w-auto"
               onClick={() => navigate('/dashboard', { state: { plan } })}
             >
-              Empezar Programa
+              Empezar programa
             </Button>
             <Button
               variant="secondary"
@@ -531,13 +531,13 @@ export default function Results() {
               className="w-full sm:w-auto"
               onClick={() => navigate('/assessment')}
             >
-              Repetir Evaluacion
+              Repetir evaluación
             </Button>
             <button
               onClick={() => navigate('/exercises')}
               className="w-full sm:w-auto px-6 py-3 bg-white border-2 border-black text-black rounded-xl font-semibold hover:bg-black hover:text-white transition-all duration-300"
             >
-              Ver Biblioteca Completa
+              Ver biblioteca completa
             </button>
           </div>
         </div>

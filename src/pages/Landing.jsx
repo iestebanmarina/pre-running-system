@@ -21,8 +21,8 @@ export default function Landing() {
                 </span>
               </h1>
               <p className="text-xl text-muted max-w-lg mb-10">
-                El 70% de nuevos corredores se lesionan en el primer ano.
-                12 semanas de preparacion personalizada cambian eso para siempre.
+                El 70% de nuevos corredores se lesionan en el primer año.
+                12 semanas de preparación personalizada cambian eso para siempre.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
@@ -67,16 +67,16 @@ export default function Landing() {
       <section className="py-20 px-6 md:px-12 bg-surface">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-4">
-            El Problema: Una lesión predecible
+            El problema: una lesión predecible
           </h2>
           <p className="text-lg text-muted text-center max-w-2xl mx-auto mb-12">
-            La mayoria de nuevos corredores siguen el mismo patrón lesivo
+            La mayoría de nuevos corredores siguen el mismo patrón lesivo
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { num: '1', title: 'Sedentarismo', desc: '8+ horas sentado al dia. Tobillos rigidos, gluteos dormidos, cadera bloqueada, core debil.' },
-              { num: '2', title: 'Empiezan a Correr', desc: 'Sin preparacion previa. El cuerpo no esta listo para el impacto repetitivo de correr.' },
-              { num: '3', title: 'Lesion', desc: 'En 3-6 semanas aparecen fascitis plantar, rodilla del corredor, periostitis... y abandonan.' },
+              { num: '1', title: 'Sedentarismo', desc: '8+ horas sentado al día. Tobillos rígidos, glúteos dormidos, cadera bloqueada, core débil.' },
+              { num: '2', title: 'Empiezan a correr', desc: 'Sin preparación previa. El cuerpo no está listo para el impacto repetitivo de correr.' },
+              { num: '3', title: 'Lesión', desc: 'En 3-6 semanas aparecen fascitis plantar, rodilla del corredor, periostitis... y abandonan.' },
             ].map((item) => (
               <div key={item.num} className="bg-white rounded-2xl shadow-card hover:shadow-card-hover hover:-translate-y-2 transition-all duration-300 p-8 text-center border border-border">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-orange to-accent-pink text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
@@ -94,7 +94,7 @@ export default function Landing() {
       <section id="solucion" className="py-20 px-6 md:px-12 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-4">
-            La Solucion: Pre-Running System
+            La solución: Pre-Running System
           </h2>
           <p className="text-lg text-muted text-center max-w-2xl mx-auto mb-16">
             Un programa de 12 semanas que prepara tu cuerpo antes de correr
@@ -104,9 +104,9 @@ export default function Landing() {
             <div className="hidden md:block absolute top-8 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-accent-orange via-accent-pink to-black" />
 
             {[
-              { color: 'bg-black', label: 'Semanas 1-2', title: 'Evaluacion', desc: '7 tests especificos que identifican tus limitaciones individuales: tobillos, cadera, gluteos, core, flexibilidad, capacidad y equilibrio.' },
-              { color: 'bg-gradient-to-br from-accent-orange to-accent-pink', label: 'Semanas 3-10', title: 'Fundamentos', desc: 'Plan personalizado para corregir tus disfunciones: movilidad, activacion, fuerza y capacidad aerobica.' },
-              { color: 'bg-black', label: 'Semanas 9-12', title: 'Transicion', desc: 'Introduccion gradual al running. Tu cuerpo ya esta preparado para correr de forma segura y sostenible.' },
+              { color: 'bg-black', label: 'Semanas 1-2', title: 'Evaluación', desc: '7 tests específicos que identifican tus limitaciones individuales: tobillos, cadera, glúteos, core, flexibilidad, capacidad y equilibrio.' },
+              { color: 'bg-gradient-to-br from-accent-orange to-accent-pink', label: 'Semanas 3-10', title: 'Fundamentos', desc: 'Plan personalizado para corregir tus disfunciones: movilidad, activación, fuerza y capacidad aeróbica.' },
+              { color: 'bg-black', label: 'Semanas 9-12', title: 'Transición', desc: 'Introducción gradual al running. Tu cuerpo ya está preparado para correr de forma segura y sostenible.' },
             ].map((phase) => (
               <div key={phase.title} className="text-center">
                 <div className={`w-16 h-16 ${phase.color} text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-4 relative z-10`}>
@@ -132,14 +132,14 @@ export default function Landing() {
           <div className="bg-white rounded-2xl shadow-card overflow-hidden border border-border">
             <div className="grid grid-cols-3 font-bold text-sm md:text-base">
               <div className="p-4 md:p-6" />
-              <div className="p-4 md:p-6 text-center text-muted">Programas Genéricos</div>
+              <div className="p-4 md:p-6 text-center text-muted">Programas genéricos</div>
               <div className="p-4 md:p-6 text-center text-white bg-gradient-to-r from-accent-orange to-accent-pink font-bold">Pre-Running System</div>
             </div>
             {[
-              ['Evaluacion inicial', 'No evaluan', '7 tests especificos'],
-              ['Personalizacion', 'Plan unico para todos', 'Adaptado a tus limitaciones'],
-              ['Tasa de lesion', '~70% en primer ano', '5-10% con preparacion'],
-              ['Resultado', 'Frustracion y abandono', 'Correr 10-20 anos sin lesion'],
+              ['Evaluación inicial', 'No evalúan', '7 tests específicos'],
+              ['Personalización', 'Plan único para todos', 'Adaptado a tus limitaciones'],
+              ['Tasa de lesión', '~70% en primer año', '5-10% con preparación'],
+              ['Resultado', 'Frustración y abandono', 'Correr 10-20 años sin lesión'],
             ].map(([label, generic, prerunning], i) => (
               <div key={i} className="grid grid-cols-3 border-t border-border">
                 <div className="p-4 md:p-6 font-medium text-black text-sm md:text-base">{label}</div>
@@ -155,17 +155,17 @@ export default function Landing() {
       <section className="py-20 px-6 md:px-12 bg-black text-white">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Empieza tu evaluacion ahora
+            Empieza tu evaluación ahora
           </h2>
           <p className="text-xl text-white/60 mb-10">
-            Descubre que necesita tu cuerpo antes de correr.
-            En 15 minutos tendras tu plan personalizado.
+            Descubre qué necesita tu cuerpo antes de correr.
+            En 15 minutos tendrás tu plan personalizado.
           </p>
           <button
             onClick={() => navigate('/onboarding')}
             className="bg-gradient-to-r from-accent-orange to-accent-pink text-white font-bold text-xl px-10 py-5 rounded-xl hover:scale-[1.02] transition-all duration-300 shadow-elevated mb-4"
           >
-            Empezar mi evaluacion gratuita
+            Empezar mi evaluación gratuita
           </button>
           <p className="text-white/40 text-sm">
             No requiere registro &bull; Resultados inmediatos &bull; By Iñigo Esteban

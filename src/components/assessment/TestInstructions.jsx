@@ -4,7 +4,7 @@ const TestInstructions = ({ illustrationText, steps, tips, warnings }) => {
   return (
     <div className="bg-surface border border-border rounded-2xl p-6 mb-6">
       <h3 className="text-lg font-bold text-black mb-4">
-        Como Hacer Este Test
+        Cómo hacer este test
       </h3>
 
       {/* Ilustracion visual */}
@@ -28,7 +28,7 @@ const TestInstructions = ({ illustrationText, steps, tips, warnings }) => {
 
       {/* Tips importantes */}
       <div className="bg-white border-l-4 border-accent-orange p-4 mb-4 rounded-r-lg">
-        <p className="font-semibold text-black mb-2">Tips Importantes:</p>
+        <p className="font-semibold text-black mb-2">Tips importantes:</p>
         <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
           {tips.map((tip, index) => (
             <li key={index}>{tip}</li>
@@ -38,7 +38,7 @@ const TestInstructions = ({ illustrationText, steps, tips, warnings }) => {
 
       {/* Errores comunes */}
       <div className="bg-white border-l-4 border-accent-pink p-4 rounded-r-lg">
-        <p className="font-semibold text-black mb-2">Evita Estos Errores:</p>
+        <p className="font-semibold text-black mb-2">Evita estos errores:</p>
         <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
           {warnings.map((warning, index) => (
             <li key={index}>{warning}</li>

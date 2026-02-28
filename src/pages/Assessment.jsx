@@ -66,7 +66,7 @@ const Assessment = () => {
 
       if (assessmentError) {
         console.error('Failed to save assessment:', assessmentError)
-        alert('Error al guardar la evaluacion. Por favor, intenta de nuevo.')
+        alert('Error al guardar la evaluación. Por favor, intenta de nuevo.')
       }
 
       if (assessmentRecord) {

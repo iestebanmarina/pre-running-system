@@ -62,11 +62,11 @@ function getCurrentPhase(currentWeek, plan) {
   const phase2End = plan.phase1Duration + plan.phase2Duration
 
   if (currentWeek <= phase1End) {
-    return 'Evaluacion'
+    return 'Evaluación'
   } else if (currentWeek <= phase2End) {
     return 'Fundamentos'
   } else {
-    return 'Transicion Running'
+    return 'Transición running'
   }
 }
 
@@ -182,11 +182,11 @@ export default function Dashboard() {
           </div>
 
           <h2 className="text-xl font-bold text-black mb-2">
-            Aun no has completado tu evaluacion
+            Aún no has completado tu evaluación
           </h2>
           <p className="text-muted mb-6">
-            Para crear tu plan personalizado de 12 semanas, necesitas completar las 7 pruebas de evaluacion inicial.
-            Solo te tomara 15-20 minutos.
+            Para crear tu plan personalizado de 12 semanas, necesitas completar las 7 pruebas de evaluación inicial.
+            Solo te tomará 15-20 minutos.
           </p>
 
           <Button
@@ -195,7 +195,7 @@ export default function Dashboard() {
             className="w-full"
             onClick={() => navigate('/assessment')}
           >
-            Empezar Evaluacion
+            Empezar evaluación
           </Button>
 
           <p className="text-xs text-muted mt-4">
@@ -218,10 +218,10 @@ export default function Dashboard() {
     const names = {
       monday: 'Lunes',
       tuesday: 'Martes',
-      wednesday: 'Miercoles',
+      wednesday: 'Miércoles',
       thursday: 'Jueves',
       friday: 'Viernes',
-      saturday: 'Sabado',
+      saturday: 'Sábado',
       sunday: 'Domingo'
     }
     return names[day] || day
@@ -229,13 +229,13 @@ export default function Dashboard() {
 
   function getSessionTypeName(type) {
     const names = {
-      mobility_activation: 'Movilidad + Activacion',
+      mobility_activation: 'Movilidad + Activación',
       strength: 'Fuerza',
-      capacity: 'Capacidad Aerobica',
+      capacity: 'Capacidad aeróbica',
       running: 'Running',
       maintenance: 'Mantenimiento',
       rest: 'Descanso',
-      assessment: 'Evaluacion'
+      assessment: 'Evaluación'
     }
     return names[type] || type
   }
@@ -246,7 +246,7 @@ export default function Dashboard() {
       <section className="bg-black px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-2xl sm:text-3xl font-bold text-white text-center mb-2">
-            Mi Programa Pre-Running
+            Mi programa Pre-Running
           </h1>
           <p className="text-white/60 text-center mb-6">
             Fase {currentPhase} — Semana {currentWeek} de {plan.totalWeeks}
@@ -275,7 +275,7 @@ export default function Dashboard() {
       {/* SECCION 1: ESTADO ACTUAL */}
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">Estado Actual</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">Estado actual</h2>
 
           <div className="bg-white rounded-2xl shadow-card border border-border p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -305,7 +305,7 @@ export default function Dashboard() {
       {/* SECCION 2: MIS PRIORIDADES */}
       <section className="bg-surface px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">Mis Prioridades</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">Mis prioridades</h2>
 
           {plan.priorities && plan.priorities.length > 0 ? (
             <div className="space-y-3">
@@ -332,7 +332,7 @@ export default function Dashboard() {
           ) : (
             <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
               <p className="text-green-700">
-                No tienes prioridades pendientes. Excelente trabajo!
+                No tienes prioridades pendientes. ¡Excelente trabajo!
               </p>
             </div>
           )}
@@ -342,7 +342,7 @@ export default function Dashboard() {
       {/* SECCION 3: SESION DE HOY */}
       <section className="px-4 py-8 md:py-12">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">Sesion de Hoy</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">Sesión de hoy</h2>
 
           {todaySession ? (
             <div className="bg-white rounded-2xl shadow-card border border-border p-6">
@@ -361,7 +361,7 @@ export default function Dashboard() {
 
               {todaySession.type === 'rest' ? (
                 <p className="text-muted">
-                  Dia de descanso. Tu cuerpo necesita recuperar para adaptarse.
+                  Día de descanso. Tu cuerpo necesita recuperar para adaptarse.
                 </p>
               ) : todaySession.type === 'running' ? (
                 <div className="bg-accent-orange/5 border border-accent-orange/20 rounded-xl p-4">
@@ -369,16 +369,16 @@ export default function Dashboard() {
                     Running Intervals
                   </p>
                   <p className="text-muted">
-                    {todaySession.notes || 'Consulta tu plan para detalles'}
+                    {todaySession.notes || 'Consulta tu plan para más detalles'}
                   </p>
                 </div>
               ) : todaySession.type === 'assessment' ? (
                 <div className="bg-surface border border-border rounded-xl p-4">
                   <p className="font-semibold text-black mb-2">
-                    Evaluacion
+                    Evaluación
                   </p>
                   <p className="text-muted">
-                    {todaySession.notes || 'Completa los tests de evaluacion'}
+                    {todaySession.notes || 'Completa los tests de evaluación'}
                   </p>
                 </div>
               ) : (
@@ -411,7 +411,7 @@ export default function Dashboard() {
                     })
                   ) : (
                     <p className="text-muted text-sm">
-                      {todaySession.notes || 'No hay ejercicios especificos para esta sesion'}
+                      {todaySession.notes || 'No hay ejercicios específicos para esta sesión'}
                     </p>
                   )}
                 </div>
@@ -419,15 +419,15 @@ export default function Dashboard() {
 
               <button
                 className="mt-4 w-full bg-gradient-to-r from-accent-orange to-accent-pink text-white py-3 rounded-xl font-semibold hover:scale-[1.01] transition-all duration-300"
-                onClick={() => alert('Funcionalidad "Marcar como completada" sera implementada en Fase 3')}
+                onClick={() => alert('Funcionalidad "Marcar como completada" será implementada en la fase 3')}
               >
-                Marcar como Completada
+                Marcar como completada
               </button>
             </div>
           ) : (
             <div className="bg-surface rounded-2xl border border-border p-6">
               <p className="text-muted text-center">
-                No hay sesion programada para hoy o es dia de descanso.
+                No hay sesión programada para hoy o es día de descanso.
               </p>
             </div>
           )}
@@ -444,7 +444,7 @@ export default function Dashboard() {
               className="w-full sm:w-auto"
               onClick={() => navigate('/results', { state: { plan } })}
             >
-              Ver Plan Completo
+              Ver plan completo
             </Button>
             <Button
               variant="secondary"
@@ -452,7 +452,7 @@ export default function Dashboard() {
               className="w-full sm:w-auto"
               onClick={() => navigate('/assessment')}
             >
-              Repetir Evaluacion
+              Repetir evaluación
             </Button>
           </div>
         </div>

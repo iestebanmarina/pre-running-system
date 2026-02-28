@@ -14,7 +14,7 @@ const BalanceTest = ({ onComplete, initialData = {} }) => {
 
     if (num >= 60) return { text: 'BUENO', color: 'text-green-600' }
     if (num >= 40 && num < 60) return { text: 'ACEPTABLE', color: 'text-yellow-600' }
-    return { text: 'DEFICIT ESTABILIDAD', color: 'text-red-600' }
+    return { text: 'DÉFICIT DE ESTABILIDAD', color: 'text-red-600' }
   }
 
   const isValid = (value) => {
@@ -50,34 +50,34 @@ const BalanceTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #7: Balance y Estabilidad
+          Test #7: Balance y estabilidad
         </h2>
         <p className="text-muted">
-          Evalua tu equilibrio unipodal. Mantente sobre un pie con los ojos abiertos y
-          cronometra cuanto tiempo puedes mantener el equilibrio sin apoyar el otro pie.
+          Evalúa tu equilibrio unipodal. Mantente sobre un pie con los ojos abiertos y
+          cronometra cuánto tiempo puedes mantener el equilibrio sin apoyar el otro pie.
         </p>
       </div>
 
       <TestInstructions
-        illustrationText="De pie sobre una pierna, brazos a los lados, cronometro corriendo"
+        illustrationText="De pie sobre una pierna, brazos a los lados, cronómetro corriendo"
         steps={[
-          'Parate descalzo sobre tu pierna derecha',
+          'Párate descalzo sobre tu pierna derecha',
           'Flexiona ligeramente la rodilla de apoyo',
-          'Levanta el pie izquierdo del suelo (no importa cuanto)',
-          'Manten los brazos a los lados (no apoyes en nada)',
-          'Cronometra cuanto tiempo aguantas SIN poner el otro pie en el suelo, tocar algo para equilibrarte, o mover el pie de apoyo',
-          'Maximo 60 segundos por pierna',
-          'Repite con pierna izquierda'
+          'Levanta el pie izquierdo del suelo (no importa cuánto)',
+          'Mantén los brazos a los lados (no te apoyes en nada)',
+          'Cronometra cuánto tiempo aguantas SIN poner el otro pie en el suelo, tocar algo para equilibrarte o mover el pie de apoyo',
+          'Máximo 60 segundos por pierna',
+          'Repite con la pierna izquierda'
         ]}
         tips={[
           'Mira un punto fijo en la pared (ayuda al equilibrio)',
-          'Esta bien tambalearse, cuenta mientras el pie no toque',
-          'Haz 2-3 intentos y quedate con el mejor tiempo'
+          'Está bien tambalearse, cuenta mientras el pie no toque',
+          'Haz 2-3 intentos y quédate con el mejor tiempo'
         ]}
         warnings={[
           'Apoyarse en algo (debe ser sin apoyo)',
           'Rodilla de apoyo completamente recta (flexiona ligeramente)',
-          'Contar despues de tocar el suelo'
+          'Contar después de tocar el suelo'
         ]}
       />
 

@@ -41,34 +41,34 @@ const CoreStabilityTest = ({ onComplete, initialData = {} }) => {
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-black mb-2">
-          Test #4: Estabilidad del Core
+          Test #4: Estabilidad del core
         </h2>
         <p className="text-muted">
-          Mide la resistencia del core con la plancha. Cronometra cuanto tiempo puedes mantener
-          una plancha perfecta con forma correcta antes de perder la alineacion.
+          Mide la resistencia del core con la plancha. Cronometra cuánto tiempo puedes mantener
+          una plancha perfecta con forma correcta antes de perder la alineación.
         </p>
       </div>
 
       <TestInstructions
-        illustrationText="Vista lateral: cuerpo en linea recta desde cabeza hasta talones"
+        illustrationText="Vista lateral: cuerpo en línea recta desde cabeza hasta talones"
         steps={[
-          'Posicionate boca abajo con antebrazos en el suelo',
+          'Posiciónate boca abajo con antebrazos en el suelo',
           'Codos bajo los hombros, antebrazos paralelos',
-          'Eleva tu cuerpo formando una linea recta (cabeza-espalda-talones)',
+          'Eleva tu cuerpo formando una línea recta (cabeza-espalda-talones)',
           'Activa el abdomen (como si esperaras un golpe en la panza)',
-          'Manten la posicion sin que la cadera baje o suba',
-          'Cronometra cuanto tiempo aguantas con buena forma',
-          'Detente cuando la cadera empiece a caer o sientas que no puedes mas'
+          'Mantén la posición sin que la cadera baje o suba',
+          'Cronometra cuánto tiempo aguantas con buena forma',
+          'Detente cuando la cadera empiece a caer o sientas que no puedes más'
         ]}
         tips={[
           'Mira al suelo (cuello neutro, no arriba)',
-          'Aprieta gluteos y abdomen simultaneamente',
-          'Respira normalmente, no aguantes la respiracion'
+          'Aprieta glúteos y abdomen simultáneamente',
+          'Respira normalmente, no aguantes la respiración'
         ]}
         warnings={[
-          'Cadera muy alta o muy baja (rompe la linea)',
-          'Aguantar la respiracion',
-          'Contar tiempo cuando la forma ya se perdio'
+          'Cadera muy alta o muy baja (rompe la línea)',
+          'Aguantar la respiración',
+          'Contar tiempo cuando la forma ya se perdió'
         ]}
       />
 
