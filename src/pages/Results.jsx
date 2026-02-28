@@ -12,40 +12,46 @@ const MOCK_PLAN = {
   priorities: [
     {
       area: 'Dorsiflexión del tobillo',
+      areaKey: 'ANKLE_ROM',
       severity: 'HIGH',
-      current: '8 cm',
+      current: 'D: 8 cm / I: 12 cm',
       target: '13 cm',
       weeklyMinutes: 70,
-      exercises: ['ankle_wall_mobility', 'calf_stretch', 'dorsiflexion_active']
+      exercises: ['ankle_wall_mobility', 'ankle_circles', 'dorsiflexion_active'],
+      asymmetry: { present: true, weakerSide: 'right', difference: 4, rightValue: 8, leftValue: 12 }
     },
     {
       area: 'Activación del glúteo',
+      areaKey: 'GLUTE_ACTIVATION',
       severity: 'HIGH',
       current: 'Isquiotibiales primero',
       target: 'Glúteo primero',
       weeklyMinutes: 105,
-      exercises: ['clams', 'bridge', 'single_leg_bridge', 'fire_hydrants']
+      exercises: ['glute_bridge', 'clams', 'fire_hydrants', 'donkey_kicks']
     },
     {
       area: 'Estabilidad del core',
+      areaKey: 'CORE',
       severity: 'HIGH',
       current: '25 segundos',
       target: '60 segundos',
       weeklyMinutes: 60,
-      exercises: ['plank_progression', 'dead_bug', 'bird_dog']
+      exercises: ['dead_bug', 'bird_dog', 'plank_progression']
     },
     {
       area: 'Flexibilidad de cadena posterior',
+      areaKey: 'POSTERIOR_CHAIN',
       severity: 'MEDIUM',
       current: 'Rodillas',
       target: 'Espinillas o mejor',
       weeklyMinutes: 40,
-      exercises: ['toe_touch_progression', 'hamstring_stretch', 'good_morning']
+      exercises: ['toe_touch_progression', 'hamstring_stretch', 'cat_cow']
     },
     {
       area: 'Equilibrio y estabilidad',
+      areaKey: 'BALANCE',
       severity: 'MEDIUM',
-      current: '30 segundos',
+      current: 'D: 30s / I: 25s',
       target: '60 segundos',
       weeklyMinutes: 30,
       exercises: ['single_leg_stand', 'balance_progression', 'stability_exercises']
@@ -54,7 +60,9 @@ const MOCK_PLAN = {
   foundationsDuration: 10,
   transitionDuration: 4,
   estimatedWeeks: 10,
-  totalWeeks: 14
+  totalWeeks: 14,
+  deloadWeeks: [4, 8],
+  aerobicLevel: 'standard'
 }
 
 // ============================================================================
@@ -173,6 +181,19 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
             </svg>
             <span>Objetivo: <span className="font-medium text-accent-orange">{priority.target}</span></span>
           </div>
+
+          {/* Asymmetry warning */}
+          {priority.asymmetry?.present && (
+            <div className="flex items-center gap-2 text-sm mb-3 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              <span className="text-amber-700 text-xs">
+                Asimetría detectada: lado {priority.asymmetry.weakerSide === 'right' ? 'derecho' : 'izquierdo'} más débil
+                (diferencia: {priority.asymmetry.difference}{priority.area.includes('tobillo') ? ' cm' : priority.area.includes('cadera') ? '°' : 's'})
+              </span>
+            </div>
+          )}
 
           {/* Exercise pills */}
           <div className="flex flex-wrap gap-1.5">

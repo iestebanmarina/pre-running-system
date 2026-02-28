@@ -9,6 +9,11 @@
  * Output: { weeks: [{ weekNumber, phase, sessions: [...] }] }
  */
 
+import { getExercisesForPhase } from './personalization'
+
+// Local alias to avoid issues with hoisting in classifyPriorityExercises
+const getExercisesForPhaseLocal = getExercisesForPhase
+
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -55,39 +60,107 @@ const TRANSITION_TEMPLATE = {
 }
 
 /**
- * Running interval progression over 4 weeks of Phase 3.
- * Each entry: { runMinutes, walkMinutes, intervals, totalMinutes, description }
+ * Running interval progressions differentiated by aerobic capacity.
+ *
+ * - beginner: under_30min_hard → very gradual, starts with 30s run intervals
+ * - standard: 30-45min_mild → current progression (1min → 5min)
+ * - advanced: 45min_easy → accelerated, starts with 5min running
  */
-const RUNNING_PROGRESSION = [
-  {
-    runMinutes: 1,
-    walkMinutes: 4,
-    intervals: 6,
-    totalMinutes: 30,
-    description: '6x (1min trote + 4min caminando) = 30min'
-  },
-  {
-    runMinutes: 2,
-    walkMinutes: 3,
-    intervals: 6,
-    totalMinutes: 30,
-    description: '6x (2min trote + 3min caminando) = 30min'
-  },
-  {
-    runMinutes: 3,
-    walkMinutes: 2,
-    intervals: 6,
-    totalMinutes: 30,
-    description: '6x (3min trote + 2min caminando) = 30min'
-  },
-  {
-    runMinutes: 5,
-    walkMinutes: 1,
-    intervals: 5,
-    totalMinutes: 30,
-    description: '5x (5min trote + 1min caminando) = 30min'
-  }
-]
+const RUNNING_PROGRESSIONS = {
+  beginner: [
+    {
+      runMinutes: 0.5,
+      walkMinutes: 4.5,
+      intervals: 4,
+      totalMinutes: 20,
+      description: '4x (30seg trote suave + 4.5min caminando) = 20min'
+    },
+    {
+      runMinutes: 1,
+      walkMinutes: 4,
+      intervals: 5,
+      totalMinutes: 25,
+      description: '5x (1min trote + 4min caminando) = 25min'
+    },
+    {
+      runMinutes: 1.5,
+      walkMinutes: 3.5,
+      intervals: 6,
+      totalMinutes: 30,
+      description: '6x (1.5min trote + 3.5min caminando) = 30min'
+    },
+    {
+      runMinutes: 2,
+      walkMinutes: 3,
+      intervals: 6,
+      totalMinutes: 30,
+      description: '6x (2min trote + 3min caminando) = 30min'
+    }
+  ],
+  standard: [
+    {
+      runMinutes: 1,
+      walkMinutes: 4,
+      intervals: 6,
+      totalMinutes: 30,
+      description: '6x (1min trote + 4min caminando) = 30min'
+    },
+    {
+      runMinutes: 2,
+      walkMinutes: 3,
+      intervals: 6,
+      totalMinutes: 30,
+      description: '6x (2min trote + 3min caminando) = 30min'
+    },
+    {
+      runMinutes: 3,
+      walkMinutes: 2,
+      intervals: 6,
+      totalMinutes: 30,
+      description: '6x (3min trote + 2min caminando) = 30min'
+    },
+    {
+      runMinutes: 5,
+      walkMinutes: 1,
+      intervals: 5,
+      totalMinutes: 30,
+      description: '5x (5min trote + 1min caminando) = 30min'
+    }
+  ],
+  advanced: [
+    {
+      runMinutes: 5,
+      walkMinutes: 2,
+      intervals: 4,
+      totalMinutes: 28,
+      description: '4x (5min trote + 2min caminando) = 28min'
+    },
+    {
+      runMinutes: 8,
+      walkMinutes: 2,
+      intervals: 3,
+      totalMinutes: 30,
+      description: '3x (8min trote + 2min caminando) = 30min'
+    },
+    {
+      runMinutes: 10,
+      walkMinutes: 2,
+      intervals: 3,
+      totalMinutes: 36,
+      description: '3x (10min trote + 2min caminando) = 36min'
+    },
+    {
+      runMinutes: 15,
+      walkMinutes: 1,
+      intervals: 2,
+      totalMinutes: 32,
+      description: '2x (15min trote + 1min caminando) = 32min'
+    }
+  ]
+}
+
+// Backward compatibility alias
+const RUNNING_PROGRESSION = RUNNING_PROGRESSIONS.standard
 
 const MAX_SESSION_MINUTES = 60
 
@@ -96,11 +169,43 @@ const MAX_SESSION_MINUTES = 60
  * Checked in order — first match wins.
  */
 const CATEGORY_INFERENCE_RULES = [
-  { pattern: /stretch|mobility|rom|dorsiflexion|90_90|cat_cow|flexor/, category: 'mobility' },
-  { pattern: /bridge|clam|fire_hydrant|dead_bug|bird_dog|activation|balance|stability|single_leg_stand/, category: 'activation' },
-  { pattern: /squat|plank|lunge|step_up|good_morning|progression/, category: 'strength' },
+  { pattern: /stretch|mobility|rom|dorsiflexion|90_90|cat_cow|flexor|opener|car$/, category: 'mobility' },
+  { pattern: /bridge|clam|fire_hydrant|dead_bug|bird_dog|activation|balance|stability|single_leg_stand|donkey_kick|prone_hip|banded_walk/, category: 'activation' },
+  { pattern: /squat|plank|lunge|step_up|thrust|rdl|deadlift|anti_rotation|pallof|side_plank|tibialis/, category: 'strength' },
   { pattern: /walk|cardio|zone2|aerobic|capacity/, category: 'capacity' }
 ]
+
+/**
+ * Session phase order for correct exercise sequencing within a session.
+ *
+ * Science-based ordering:
+ * 1. Tissue prep / warmup (foam roll, dynamic warmup)
+ * 2. Activation (isolated, CNS fresh — glute bridges, clams)
+ * 3. Mobility (ROM work, stretching — while nervous system is primed)
+ * 4. Strength / integration (compound or loaded movements)
+ * 5. Cooldown (gentle stretching)
+ */
+const SESSION_PHASE_ORDER = {
+  warmup: 0,
+  activation: 1,
+  mobility: 2,
+  strength: 3,
+  capacity: 4,
+  cooldown: 5
+}
+
+/**
+ * Maps exercise categories to session phase for ordering purposes.
+ */
+function getSessionPhase(category) {
+  switch (category) {
+    case 'activation': return 'activation'
+    case 'mobility': return 'mobility'
+    case 'strength': return 'strength'
+    case 'capacity': return 'capacity'
+    default: return 'mobility'
+  }
+}
 
 /**
  * General maintenance exercises used when the plan has no priorities.
@@ -108,8 +213,8 @@ const CATEGORY_INFERENCE_RULES = [
  */
 const GENERAL_MAINTENANCE_EXERCISES = {
   mobility_activation: ['cat_cow', 'hip_flexor_stretch', 'ankle_wall_mobility', 'glute_bridge', 'dead_bug'],
-  strength: ['bodyweight_squat', 'plank', 'glute_bridge'],
-  capacity: ['walking']
+  strength: ['bodyweight_squat', 'plank_progression', 'glute_bridge'],
+  capacity: ['walking_progression']
 }
 
 // ============================================================================
@@ -139,7 +244,50 @@ function inferExerciseCategory(exerciseId, exercisesData) {
 }
 
 /**
- * Resolves sets/reps/hold for an exercise, applying progression.
+ * Periodization phases for proper progression.
+ *
+ * Neural (weeks 1-3): Low reps, focus on form and CNS adaptation. RIR 3-4.
+ * Hypertrophy (weeks 4-7): Higher reps, moderate intensity. RIR 1-2.
+ * Power/endurance (weeks 8-10): High reps or tempo work.
+ *
+ * Progression increments are capped at ~10-15% per phase transition
+ * (not the previous 20% which was too aggressive).
+ */
+const PERIODIZATION = {
+  neural: {
+    setsMultiplier: 1.0,
+    repsRange: { min: 8, max: 10 },
+    holdMultiplier: 0.8,
+    rirNote: 'RIR 3-4 (deja 3-4 repeticiones en reserva)'
+  },
+  hypertrophy: {
+    setsMultiplier: 1.0,
+    repsRange: { min: 12, max: 15 },
+    holdMultiplier: 1.0,
+    rirNote: 'RIR 1-2 (cerca del fallo, con buena forma)'
+  },
+  power: {
+    setsMultiplier: 0.85, // slightly fewer sets, higher reps
+    repsRange: { min: 15, max: 20 },
+    holdMultiplier: 1.15,
+    rirNote: 'Velocidad controlada, máximo rango de movimiento'
+  }
+}
+
+/**
+ * Determines the periodization phase from the progression factor.
+ *
+ * @param {number} progressionFactor - 0.0 (start) to 1.0 (end of phase)
+ * @returns {'neural'|'hypertrophy'|'power'}
+ */
+function getPeriodizationPhase(progressionFactor) {
+  if (progressionFactor < 0.3) return 'neural'
+  if (progressionFactor < 0.7) return 'hypertrophy'
+  return 'power'
+}
+
+/**
+ * Resolves sets/reps/hold for an exercise, applying periodized progression.
  *
  * @param {string} exerciseId
  * @param {Object} exercisesData
@@ -151,29 +299,30 @@ function resolveExerciseParams(exerciseId, exercisesData, category, progressionF
   const dbExercise = exercisesData[exerciseId]
   const defaults = DEFAULT_EXERCISE_PARAMS[category] || DEFAULT_EXERCISE_PARAMS.mobility
 
-  let baseSets = dbExercise?.sets ?? defaults.sets
-  let baseReps = dbExercise?.reps ?? defaults.reps
-  let baseHold = dbExercise?.hold_seconds ?? (dbExercise?.holdSeconds ?? defaults.holdSeconds)
-  let baseDuration = dbExercise?.duration_minutes ?? (dbExercise?.durationMinutes ?? defaults.durationMinutes)
+  const baseSets = dbExercise?.sets ?? defaults.sets
+  const baseReps = dbExercise?.reps ?? defaults.reps
+  const baseHold = dbExercise?.hold_seconds ?? (dbExercise?.holdSeconds ?? defaults.holdSeconds)
+  const baseDuration = dbExercise?.duration_minutes ?? (dbExercise?.durationMinutes ?? defaults.durationMinutes)
 
-  // Apply progression factor
-  let sets, reps, holdSeconds
+  const phase = getPeriodizationPhase(progressionFactor)
+  const periodConfig = PERIODIZATION[phase]
 
-  if (progressionFactor < 0.33) {
-    // Early phase: easier
-    sets = Math.max(1, baseSets - 1)
-    reps = baseReps != null ? Math.round(baseReps * 0.8) : null
-    holdSeconds = baseHold != null ? Math.round(baseHold * 0.8) : null
-  } else if (progressionFactor < 0.66) {
-    // Mid phase: base values
-    sets = baseSets
-    reps = baseReps
-    holdSeconds = baseHold
-  } else {
-    // Late phase: harder
-    sets = baseSets + 1
-    reps = baseReps != null ? Math.min(Math.round(baseReps * 1.2), 25) : null
-    holdSeconds = baseHold != null ? Math.min(Math.round(baseHold * 1.2), 60) : null
+  // Apply periodization
+  const sets = Math.max(1, Math.round(baseSets * periodConfig.setsMultiplier))
+
+  let reps = null
+  if (baseReps != null) {
+    // Adjust reps within the phase's range, proportional to the base value
+    const rangeCenter = (periodConfig.repsRange.min + periodConfig.repsRange.max) / 2
+    const ratio = baseReps / 12 // normalize around default 12 reps
+    reps = Math.round(rangeCenter * ratio)
+    reps = Math.max(periodConfig.repsRange.min, Math.min(reps, periodConfig.repsRange.max))
+  }
+
+  let holdSeconds = null
+  if (baseHold != null) {
+    holdSeconds = Math.round(baseHold * periodConfig.holdMultiplier)
+    holdSeconds = Math.max(10, Math.min(holdSeconds, 60))
   }
 
   return {
@@ -209,14 +358,17 @@ function selectExercisesForDay(exerciseIds, dayIndex, weekIndex, maxCount) {
 }
 
 /**
- * Classifies all priority exercises into session type buckets.
+ * Classifies priority exercises into session type buckets.
+ * Uses phase-specific exercise pools when available (areaKey + weekNumber).
  *
  * @param {Array} priorities - plan priorities
  * @param {Object} exercisesData
+ * @param {number} weekNumber - current week number (1-based) for phase selection
+ * @param {number} foundationsDuration - total foundations weeks for phase calculation
  * @returns {{ mobilityActivation: Array, strength: Array, capacity: Array }}
  *   Each entry: { exerciseId, severity, weeklyMinutes, priorityArea }
  */
-function classifyPriorityExercises(priorities, exercisesData) {
+function classifyPriorityExercises(priorities, exercisesData, weekNumber = 1, foundationsDuration = 6) {
   const classified = {
     mobilityActivation: [],
     strength: [],
@@ -224,7 +376,16 @@ function classifyPriorityExercises(priorities, exercisesData) {
   }
 
   for (const priority of priorities) {
-    for (const exerciseId of priority.exercises) {
+    // Use phase-specific exercises if areaKey is available
+    let exerciseIds = priority.exercises
+    if (priority.areaKey && typeof getExercisesForPhaseLocal === 'function') {
+      const phaseExercises = getExercisesForPhaseLocal(priority.areaKey, weekNumber, foundationsDuration)
+      if (phaseExercises && phaseExercises.length > 0) {
+        exerciseIds = phaseExercises
+      }
+    }
+
+    for (const exerciseId of exerciseIds) {
       const category = inferExerciseCategory(exerciseId, exercisesData)
 
       const entry = {
@@ -241,7 +402,6 @@ function classifyPriorityExercises(priorities, exercisesData) {
       } else if (category === 'capacity') {
         classified.capacity.push(entry)
       } else {
-        // default bucket
         classified.mobilityActivation.push(entry)
       }
     }
@@ -262,7 +422,122 @@ function estimateSessionDuration(exercises) {
 // ============================================================================
 
 /**
+ * Calculates how many minutes each session type should have per session,
+ * based on the total weeklyMinutes from priorities.
+ *
+ * Template: Mon=mob/act, Tue=strength, Wed=mob/act, Thu=rest, Fri=strength, Sat=capacity
+ * So: 2 mob/act sessions, 2 strength sessions, 1 capacity session per week.
+ *
+ * @param {Array} priorities
+ * @returns {{ mobilityActivation: number, strength: number, capacity: number }}
+ */
+function calculateTargetMinutesPerSession(priorities) {
+  let mobActTotal = 0
+  let strengthTotal = 0
+  let capacityTotal = 0
+
+  for (const p of priorities) {
+    // Classify the priority's weeklyMinutes by the dominant exercise type
+    const area = p.areaKey || p.area
+    if (['AEROBIC'].includes(area) || area === 'Capacidad aeróbica') {
+      capacityTotal += p.weeklyMinutes
+    } else if (['CORE'].includes(area) || area === 'Estabilidad del core') {
+      // Core is split between strength and activation
+      strengthTotal += p.weeklyMinutes * 0.6
+      mobActTotal += p.weeklyMinutes * 0.4
+    } else {
+      // Ankle, hip, glute, posterior chain, balance → mostly mob/act
+      mobActTotal += p.weeklyMinutes * 0.7
+      strengthTotal += p.weeklyMinutes * 0.3
+    }
+  }
+
+  // Minimum session durations
+  const MIN_SESSION = 15
+
+  return {
+    // 2 mob/act sessions per week
+    mobilityActivation: Math.max(MIN_SESSION, Math.round(mobActTotal / 2)),
+    // 2 strength sessions per week
+    strength: Math.max(MIN_SESSION, Math.round(strengthTotal / 2)),
+    // 1 capacity session per week
+    capacity: Math.max(30, Math.round(capacityTotal))
+  }
+}
+
+/**
+ * Builds an exercise list to fill a target duration in minutes.
+ * Cycles through available exercises, repeating the pool if needed
+ * to reach the target duration.
+ *
+ * @param {string[]} exerciseIds - Pool of exercises to select from
+ * @param {Object} exercisesData
+ * @param {number} progressionFactor
+ * @param {number} targetMinutes - Target session duration in minutes
+ * @param {number} dayIndex - For rotation variety
+ * @param {number} weekIndex - For rotation variety
+ * @returns {Array} Exercise list
+ */
+function buildExerciseListForDuration(exerciseIds, exercisesData, progressionFactor, targetMinutes, dayIndex, weekIndex) {
+  if (!exerciseIds || exerciseIds.length === 0) return []
+
+  const cappedTarget = Math.min(targetMinutes, MAX_SESSION_MINUTES)
+
+  // Select exercises with rotation for variety
+  const rotated = selectExercisesForDay(exerciseIds, dayIndex, weekIndex, exerciseIds.length)
+
+  // Resolve all exercises
+  const resolved = rotated.map(id => {
+    const category = inferExerciseCategory(id, exercisesData)
+    const params = resolveExerciseParams(id, exercisesData, category, progressionFactor)
+    const sessionPhase = getSessionPhase(category)
+    return { id, category, sessionPhase, params }
+  })
+
+  // Sort by session phase
+  resolved.sort((a, b) => {
+    const orderA = SESSION_PHASE_ORDER[a.sessionPhase] ?? 2
+    const orderB = SESSION_PHASE_ORDER[b.sessionPhase] ?? 2
+    return orderA - orderB
+  })
+
+  // Fill until target minutes reached
+  const exercises = []
+  let totalDuration = 0
+  let cycleIndex = 0
+
+  while (totalDuration < cappedTarget && cycleIndex < resolved.length * 2) {
+    const item = resolved[cycleIndex % resolved.length]
+
+    // Don't add duplicate exercise IDs in same session
+    if (exercises.some(e => e.exerciseId === item.id)) {
+      cycleIndex++
+      continue
+    }
+
+    if (totalDuration + item.params.durationMinutes > cappedTarget + 5) {
+      cycleIndex++
+      continue
+    }
+
+    exercises.push({
+      exerciseId: item.id,
+      sets: item.params.sets,
+      reps: item.params.reps,
+      holdSeconds: item.params.holdSeconds,
+      durationMinutes: item.params.durationMinutes,
+      notes: null
+    })
+    totalDuration += item.params.durationMinutes
+    cycleIndex++
+  }
+
+  return exercises
+}
+
+/**
  * Distributes exercises into session slots for a Foundations week.
+ * Builds sessions from weeklyMinutes targets, not arbitrary exercise counts.
  *
  * @param {Array} priorities
  * @param {Object} exercisesData
@@ -276,7 +551,7 @@ function distributeFoundationsExercises(priorities, exercisesData, weekIndex, fo
 
   // Classify exercises
   const classified = hasPriorities
-    ? classifyPriorityExercises(priorities, exercisesData)
+    ? classifyPriorityExercises(priorities, exercisesData, weekIndex + 1, foundationsDuration)
     : {
       mobilityActivation: GENERAL_MAINTENANCE_EXERCISES.mobility_activation.map(id => ({
         exerciseId: id, severity: 'MEDIUM', weeklyMinutes: 30, priorityArea: 'General'
@@ -289,77 +564,64 @@ function distributeFoundationsExercises(priorities, exercisesData, weekIndex, fo
       }))
     }
 
-  // Separate HIGH and MEDIUM
-  const highMobAct = classified.mobilityActivation.filter(e => e.severity === 'HIGH')
-  const medMobAct = classified.mobilityActivation.filter(e => e.severity !== 'HIGH')
-  const highStrength = classified.strength.filter(e => e.severity === 'HIGH')
-  const medStrength = classified.strength.filter(e => e.severity !== 'HIGH')
+  // Calculate target minutes per session from priority weeklyMinutes
+  const targetMinutes = hasPriorities
+    ? calculateTargetMinutesPerSession(priorities)
+    : { mobilityActivation: 20, strength: 20, capacity: 30 }
 
-  // When no HIGH priorities, give MEDIUM exercises more slots
-  const medMobActCount = highMobAct.length > 0 ? 1 : 3
-  const medStrengthCount = highStrength.length > 0 ? 1 : 2
+  // Build exercise pools, prioritizing HIGH severity exercises first
+  const highMobAct = classified.mobilityActivation.filter(e => e.severity === 'HIGH').map(e => e.exerciseId)
+  const medMobAct = classified.mobilityActivation.filter(e => e.severity !== 'HIGH').map(e => e.exerciseId)
+  const mobActPool = [...highMobAct, ...medMobAct]
 
+  const highStrength = classified.strength.filter(e => e.severity === 'HIGH').map(e => e.exerciseId)
+  const medStrength = classified.strength.filter(e => e.severity !== 'HIGH').map(e => e.exerciseId)
+  let strengthPool = [...highStrength, ...medStrength]
+  if (strengthPool.length === 0 && hasPriorities) {
+    strengthPool = GENERAL_MAINTENANCE_EXERCISES.strength
+  }
+
+  const capacityPool = classified.capacity.map(e => e.exerciseId)
   const dayExercises = {}
 
   // --- Monday (mobility_activation) ---
-  const monExerciseIds = [
-    ...selectExercisesForDay(highMobAct.map(e => e.exerciseId), 0, weekIndex, highMobAct.length > 0 ? 3 : 0),
-    ...selectExercisesForDay(medMobAct.map(e => e.exerciseId), 0, weekIndex, medMobActCount)
-  ]
-  dayExercises.monday = buildExerciseList(monExerciseIds, exercisesData, progressionFactor)
+  dayExercises.monday = buildExerciseListForDuration(
+    mobActPool, exercisesData, progressionFactor, targetMinutes.mobilityActivation, 0, weekIndex
+  )
 
   // --- Tuesday (strength) ---
-  const tueExerciseIds = [
-    ...selectExercisesForDay(highStrength.map(e => e.exerciseId), 1, weekIndex, highStrength.length > 0 ? 2 : 0),
-    ...selectExercisesForDay(medStrength.map(e => e.exerciseId), 1, weekIndex, medStrengthCount)
-  ]
-  // If no strength exercises from priorities, use general
-  if (tueExerciseIds.length === 0 && hasPriorities) {
-    const generalStrength = selectExercisesForDay(
-      GENERAL_MAINTENANCE_EXERCISES.strength, 1, weekIndex, 2
-    )
-    dayExercises.tuesday = buildExerciseList(generalStrength, exercisesData, progressionFactor)
-  } else {
-    dayExercises.tuesday = buildExerciseList(tueExerciseIds, exercisesData, progressionFactor)
-  }
+  dayExercises.tuesday = buildExerciseListForDuration(
+    strengthPool, exercisesData, progressionFactor, targetMinutes.strength, 1, weekIndex
+  )
 
   // --- Wednesday (mobility_activation) — different subset from Monday ---
-  const wedExerciseIds = [
-    ...selectExercisesForDay(highMobAct.map(e => e.exerciseId), 2, weekIndex, highMobAct.length > 0 ? 3 : 0),
-    ...selectExercisesForDay(medMobAct.map(e => e.exerciseId), 2, weekIndex, medMobActCount)
-  ]
-  dayExercises.wednesday = buildExerciseList(wedExerciseIds, exercisesData, progressionFactor)
+  dayExercises.wednesday = buildExerciseListForDuration(
+    mobActPool, exercisesData, progressionFactor, targetMinutes.mobilityActivation, 2, weekIndex
+  )
 
   // --- Thursday (rest) ---
   dayExercises.thursday = []
 
   // --- Friday (strength) — different subset from Tuesday ---
-  const friExerciseIds = [
-    ...selectExercisesForDay(highStrength.map(e => e.exerciseId), 4, weekIndex, highStrength.length > 0 ? 2 : 0),
-    ...selectExercisesForDay(medStrength.map(e => e.exerciseId), 4, weekIndex, medStrengthCount)
-  ]
-  if (friExerciseIds.length === 0 && hasPriorities) {
-    const generalStrength = selectExercisesForDay(
-      GENERAL_MAINTENANCE_EXERCISES.strength, 4, weekIndex, 2
-    )
-    dayExercises.friday = buildExerciseList(generalStrength, exercisesData, progressionFactor)
-  } else {
-    dayExercises.friday = buildExerciseList(friExerciseIds, exercisesData, progressionFactor)
-  }
+  dayExercises.friday = buildExerciseListForDuration(
+    strengthPool, exercisesData, progressionFactor, targetMinutes.strength, 4, weekIndex
+  )
 
   // --- Saturday (capacity) ---
-  const capacityIds = classified.capacity.map(e => e.exerciseId)
-  const satIds = capacityIds.length > 0
-    ? selectExercisesForDay(capacityIds, 5, weekIndex, 1)
-    : ['walking']
-  const capacityDuration = Math.round(30 + progressionFactor * 30) // 30min -> 60min
+  const satPool = capacityPool.length > 0 ? capacityPool : ['walking_progression']
+  const capacityDuration = Math.min(
+    Math.round(30 + progressionFactor * 30), // 30min -> 60min progression
+    targetMinutes.capacity,
+    MAX_SESSION_MINUTES
+  )
+  const satIds = selectExercisesForDay(satPool, 5, weekIndex, 1)
   dayExercises.saturday = satIds.map(id => ({
     exerciseId: id,
     sets: 1,
     reps: null,
     holdSeconds: null,
-    durationMinutes: Math.min(capacityDuration, MAX_SESSION_MINUTES),
-    notes: `Duración: ${Math.min(capacityDuration, MAX_SESSION_MINUTES)} min`
+    durationMinutes: capacityDuration,
+    notes: `Duración: ${capacityDuration} min`
   }))
 
   // --- Sunday (rest) ---
@@ -369,17 +631,35 @@ function distributeFoundationsExercises(priorities, exercisesData, weekIndex, fo
 }
 
 /**
- * Builds an exercise list with resolved params, capping total duration.
+ * Builds an exercise list with resolved params, ordered by session phase,
+ * capping total duration.
+ *
+ * Order: activation → mobility → strength → capacity
+ * This ensures CNS-fresh exercises first, ROM work while primed, then load.
  */
 function buildExerciseList(exerciseIds, exercisesData, progressionFactor) {
   const uniqueIds = [...new Set(exerciseIds)]
+
+  // Resolve all exercises first
+  const resolved = uniqueIds.map(id => {
+    const category = inferExerciseCategory(id, exercisesData)
+    const params = resolveExerciseParams(id, exercisesData, category, progressionFactor)
+    const sessionPhase = getSessionPhase(category)
+    return { id, category, sessionPhase, params }
+  })
+
+  // Sort by session phase order
+  resolved.sort((a, b) => {
+    const orderA = SESSION_PHASE_ORDER[a.sessionPhase] ?? 2
+    const orderB = SESSION_PHASE_ORDER[b.sessionPhase] ?? 2
+    return orderA - orderB
+  })
+
+  // Build list respecting max duration
   const exercises = []
   let totalDuration = 0
 
-  for (const id of uniqueIds) {
-    const category = inferExerciseCategory(id, exercisesData)
-    const params = resolveExerciseParams(id, exercisesData, category, progressionFactor)
-
+  for (const { id, params } of resolved) {
     if (totalDuration + params.durationMinutes > MAX_SESSION_MINUTES) break
 
     exercises.push({
@@ -406,23 +686,36 @@ function buildExerciseList(exerciseIds, exercisesData, progressionFactor) {
  * @param {number} foundationsDuration
  * @returns {Object} week object
  */
-function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesData, foundationsDuration) {
+function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesData, foundationsDuration, isDeload = false) {
   const dayExercises = distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration)
   const progressionFactor = foundationsDuration <= 1 ? 0.5 : weekIndex / (foundationsDuration - 1)
 
   // Progression tier for notes
   let tierNote
-  if (progressionFactor < 0.33) {
-    tierNote = 'Fase inicial: enfoque en movilidad y activación con carga baja'
+  if (isDeload) {
+    tierNote = 'Semana de descarga: mismos ejercicios, volumen reducido al 60%'
+  } else if (progressionFactor < 0.33) {
+    tierNote = 'Fase neural: enfoque en movilidad y activación con carga baja (RIR 3-4)'
   } else if (progressionFactor < 0.66) {
-    tierNote = 'Fase intermedia: aumentando volumen y añadiendo fuerza'
+    tierNote = 'Fase de desarrollo: aumentando volumen y añadiendo fuerza (RIR 1-2)'
   } else {
-    tierNote = 'Fase avanzada: máxima carga, preparando la transición a correr'
+    tierNote = 'Fase de potencia: máxima carga, preparando la transición a correr'
   }
 
   const sessions = DAYS.map(day => {
     const type = FOUNDATIONS_TEMPLATE[day]
-    const exercises = dayExercises[day] || []
+    let exercises = dayExercises[day] || []
+
+    // Apply deload: reduce sets by 40% (volume × 0.6), keep exercises and frequency
+    if (isDeload && exercises.length > 0) {
+      exercises = exercises.map(ex => ({
+        ...ex,
+        sets: Math.max(1, Math.round(ex.sets * 0.6)),
+        reps: ex.reps != null ? Math.round(ex.reps * 0.8) : null,
+        holdSeconds: ex.holdSeconds != null ? Math.round(ex.holdSeconds * 0.8) : null,
+        notes: 'Descarga: reduce intensidad, mantén la forma'
+      }))
+    }
 
     return {
       day,
@@ -436,7 +729,8 @@ function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesDat
   return {
     weekNumber,
     phase: 'foundations',
-    phaseName: 'Fundamentos',
+    phaseName: isDeload ? 'Fundamentos (descarga)' : 'Fundamentos',
+    isDeload,
     sessions
   }
 }
@@ -448,10 +742,12 @@ function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesDat
  * @param {number} weekIndex - 0-based index within Phase 3 (0-3)
  * @param {Array} priorities
  * @param {Object} exercisesData
+ * @param {string} aerobicLevel - 'beginner' | 'standard' | 'advanced'
  * @returns {Object} week object
  */
-function generateTransitionWeek(weekNumber, weekIndex, priorities, exercisesData) {
-  const runProgression = RUNNING_PROGRESSION[Math.min(weekIndex, RUNNING_PROGRESSION.length - 1)]
+function generateTransitionWeek(weekNumber, weekIndex, priorities, exercisesData, aerobicLevel = 'standard') {
+  const progression = RUNNING_PROGRESSIONS[aerobicLevel] || RUNNING_PROGRESSIONS.standard
+  const runProgression = progression[Math.min(weekIndex, progression.length - 1)]
 
   // For maintenance days, pick top exercises from HIGH priorities
   const highPriorities = priorities.filter(p => p.severity === 'HIGH')
@@ -540,7 +836,9 @@ export function generateWeeklyPlan(plan, exercisesData = {}) {
     priorities = [],
     foundationsDuration = 6,
     transitionDuration = 4,
-    totalWeeks: expectedTotal
+    totalWeeks: expectedTotal,
+    deloadWeeks = [],
+    aerobicLevel = 'standard'
   } = plan
 
   const totalWeeks = expectedTotal || (foundationsDuration + transitionDuration)
@@ -550,11 +848,12 @@ export function generateWeeklyPlan(plan, exercisesData = {}) {
     if (w <= foundationsDuration) {
       // Phase 1: Foundations
       const weekIndex = w - 1 // 0-based within Foundations
-      weeks.push(generateFoundationsWeek(w, weekIndex, priorities, exercisesData, foundationsDuration))
+      const isDeload = deloadWeeks.includes(w)
+      weeks.push(generateFoundationsWeek(w, weekIndex, priorities, exercisesData, foundationsDuration, isDeload))
     } else {
       // Phase 2: Transition
       const weekIndex = w - foundationsDuration - 1 // 0-based within Transition
-      weeks.push(generateTransitionWeek(w, weekIndex, priorities, exercisesData))
+      weeks.push(generateTransitionWeek(w, weekIndex, priorities, exercisesData, aerobicLevel))
     }
   }
 

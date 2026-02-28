@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ScreeningStep from '../components/assessment/ScreeningStep'
 import AnkleROMTest from '../components/assessment/AnkleROMTest'
 import HipExtensionTest from '../components/assessment/HipExtensionTest'
 import GluteActivationTest from '../components/assessment/GluteActivationTest'
@@ -17,6 +18,7 @@ const Assessment = () => {
   const [assessmentData, setAssessmentData] = useState({})
 
   const tests = [
+    { id: 0, name: 'Screening', component: ScreeningStep },
     { id: 1, name: 'Ankle ROM', component: AnkleROMTest },
     { id: 2, name: 'Hip Extension', component: HipExtensionTest },
     { id: 3, name: 'Glute Activation', component: GluteActivationTest },

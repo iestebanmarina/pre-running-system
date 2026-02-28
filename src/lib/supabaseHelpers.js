@@ -174,7 +174,11 @@ export async function savePlan(planData, userId, assessmentId) {
 
       // Plan metadata
       status: 'active',
-      current_week: 1
+      current_week: 1,
+
+      // Extended metadata (stored in priorities JSONB alongside priorities)
+      deload_weeks: planData.deloadWeeks || [],
+      aerobic_level: planData.aerobicLevel || 'standard'
     }
 
     // Insert into database
@@ -242,6 +246,157 @@ export async function getUserPlan(userId) {
 }
 
 // ============================================================================
+// SESSIONS
+// ============================================================================
+
+/**
+ * Marks a session as completed for the current day
+ *
+ * @param {string} userId - User's UUID
+ * @param {string} planId - Plan UUID
+ * @param {number} week - Week number
+ * @param {string} day - Day of the week (e.g., 'monday')
+ * @param {string} sessionType - Session type (e.g., 'mobility_activation')
+ * @param {number|null} difficultyRating - User's difficulty rating 1-5
+ * @returns {Promise<{data: Object|null, error: Error|null}>}
+ */
+export async function completeSession(userId, planId, week, day, sessionType, difficultyRating = null) {
+  try {
+    const { data, error } = await supabase
+      .from('user_sessions')
+      .upsert([{
+        user_id: userId,
+        plan_id: planId,
+        week,
+        day,
+        session_type: sessionType,
+        completed: true,
+        completed_at: new Date().toISOString(),
+        difficulty_rating: difficultyRating
+      }], {
+        onConflict: 'user_id,plan_id,week,day'
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error completing session:', error)
+      return { data: null, error }
+    }
+
+    return { data, error: null }
+  } catch (error) {
+    console.error('Unexpected error completing session:', error)
+    return { data: null, error }
+  }
+}
+
+/**
+ * Gets all completed sessions for a user's plan
+ *
+ * @param {string} userId - User's UUID
+ * @param {string} planId - Plan UUID
+ * @returns {Promise<{data: Array|null, error: Error|null}>}
+ */
+export async function getCompletedSessions(userId, planId) {
+  try {
+    const { data, error } = await supabase
+      .from('user_sessions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('plan_id', planId)
+      .eq('completed', true)
+      .order('completed_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching completed sessions:', error)
+      return { data: null, error }
+    }
+
+    return { data: data || [], error: null }
+  } catch (error) {
+    console.error('Unexpected error fetching completed sessions:', error)
+    return { data: null, error }
+  }
+}
+
+/**
+ * Calculates the current week number based on plan creation date
+ *
+ * @param {string} createdAt - ISO date string of plan creation
+ * @returns {number} Current week number (1-based)
+ */
+export function calculateCurrentWeek(createdAt) {
+  if (!createdAt) return 1
+
+  const startDate = new Date(createdAt)
+  const now = new Date()
+  const diffMs = now - startDate
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const weekNumber = Math.floor(diffDays / 7) + 1
+
+  return Math.max(1, weekNumber)
+}
+
+/**
+ * Calculates streak from completed sessions
+ *
+ * @param {Array} completedSessions - Array of completed session objects with completed_at
+ * @returns {{ currentStreak: number, longestStreak: number }}
+ */
+export function calculateStreak(completedSessions) {
+  if (!completedSessions || completedSessions.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 }
+  }
+
+  // Get unique dates (normalized to YYYY-MM-DD)
+  const dates = [...new Set(
+    completedSessions
+      .map(s => s.completed_at ? new Date(s.completed_at).toISOString().split('T')[0] : null)
+      .filter(Boolean)
+  )].sort().reverse()
+
+  if (dates.length === 0) return { currentStreak: 0, longestStreak: 0 }
+
+  const today = new Date().toISOString().split('T')[0]
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+
+  // Current streak: count consecutive days from today or yesterday
+  let currentStreak = 0
+  if (dates[0] === today || dates[0] === yesterday) {
+    currentStreak = 1
+    for (let i = 1; i < dates.length; i++) {
+      const prevDate = new Date(dates[i - 1])
+      const currDate = new Date(dates[i])
+      const diffDays = Math.round((prevDate - currDate) / 86400000)
+      if (diffDays === 1) {
+        currentStreak++
+      } else {
+        break
+      }
+    }
+  }
+
+  // Longest streak: scan all dates
+  let longestStreak = 1
+  let tempStreak = 1
+  const sortedAsc = [...dates].reverse()
+  for (let i = 1; i < sortedAsc.length; i++) {
+    const prevDate = new Date(sortedAsc[i - 1])
+    const currDate = new Date(sortedAsc[i])
+    const diffDays = Math.round((currDate - prevDate) / 86400000)
+    if (diffDays === 1) {
+      tempStreak++
+      longestStreak = Math.max(longestStreak, tempStreak)
+    } else {
+      tempStreak = 1
+    }
+  }
+
+  return { currentStreak, longestStreak }
+}
+
+// ============================================================================
 // NORMALIZERS
 // ============================================================================
 
@@ -263,6 +418,8 @@ export function normalizePlan(planFromDb) {
     status: planFromDb.status,
     currentWeek: planFromDb.current_week,
     createdAt: planFromDb.created_at,
-    updatedAt: planFromDb.updated_at
+    updatedAt: planFromDb.updated_at,
+    deloadWeeks: planFromDb.deload_weeks || [],
+    aerobicLevel: planFromDb.aerobic_level || 'standard'
   }
 }
