@@ -448,7 +448,7 @@ function evaluateBalance(data) {
  * - 3+ HIGH priorities = 10 weeks foundations (severe case)
  * - 2 HIGH priorities = 8 weeks foundations (moderate case)
  * - 0-1 HIGH priorities = 6 weeks foundations (mild case)
- * - Total = 2 weeks assessment + foundations + 4 weeks transition
+ * - Total = foundations + 4 weeks transition (assessment is a prior step, not a phase)
  *
  * @param {Array} priorities - Array of priority objects
  * @returns {Object} Duration breakdown
@@ -456,21 +456,20 @@ function evaluateBalance(data) {
 function calculateProgramDuration(priorities) {
   const highPriorityCount = priorities.filter(p => p.severity === 'HIGH').length
 
-  let phase2Duration
+  let foundationsDuration
   if (highPriorityCount >= 3) {
-    phase2Duration = 10
+    foundationsDuration = 10
   } else if (highPriorityCount === 2) {
-    phase2Duration = 8
+    foundationsDuration = 8
   } else {
-    phase2Duration = 6
+    foundationsDuration = 6
   }
 
   return {
-    phase1Duration: 2,        // Assessment phase (fixed)
-    phase2Duration,           // Foundations phase (variable)
-    phase3Duration: 4,        // Transition to running (fixed)
-    estimatedWeeks: phase2Duration,  // Alias for backwards compatibility
-    totalWeeks: 2 + phase2Duration + 4
+    foundationsDuration,      // Fase 1: Fundamentos (variable)
+    transitionDuration: 4,    // Fase 2: Transición a correr (fixed)
+    estimatedWeeks: foundationsDuration,
+    totalWeeks: foundationsDuration + 4
   }
 }
 
@@ -557,7 +556,10 @@ export function generatePersonalizedPlan(assessmentData) {
       success: true,
       plan: {
         priorities: [],
-        ...duration,
+        foundationsDuration: duration.foundationsDuration,
+        transitionDuration: duration.transitionDuration,
+        estimatedWeeks: duration.estimatedWeeks,
+        totalWeeks: duration.totalWeeks,
         message: '¡Excelente! No tienes limitaciones significativas. Puedes comenzar con un plan de mantenimiento general.'
       },
       warnings: validation.warnings,
@@ -579,9 +581,8 @@ export function generatePersonalizedPlan(assessmentData) {
     success: true,
     plan: {
       priorities,
-      phase1Duration: duration.phase1Duration,
-      phase2Duration: duration.phase2Duration,
-      phase3Duration: duration.phase3Duration,
+      foundationsDuration: duration.foundationsDuration,
+      transitionDuration: duration.transitionDuration,
       estimatedWeeks: duration.estimatedWeeks,
       totalWeeks: duration.totalWeeks
     },
@@ -608,9 +609,8 @@ export function formatPlanSummary(plan) {
 
   const lines = [
     `PLAN PERSONALIZADO - ${plan.totalWeeks} SEMANAS TOTAL`,
-    `Fase 1 (Evaluación): ${plan.phase1Duration} semanas`,
-    `Fase 2 (Fundamentos): ${plan.phase2Duration} semanas`,
-    `Fase 3 (Transición): ${plan.phase3Duration} semanas`,
+    `Fase 1 (Fundamentos): ${plan.foundationsDuration} semanas`,
+    `Fase 2 (Transición): ${plan.transitionDuration} semanas`,
     '',
     `PRIORIDADES (${plan.priorities.length}):`,
     ''

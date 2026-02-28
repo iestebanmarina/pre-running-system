@@ -58,12 +58,7 @@ function StatusBadge({ status }) {
 // ============================================================================
 
 function getCurrentPhase(currentWeek, plan) {
-  const phase1End = plan.phase1Duration
-  const phase2End = plan.phase1Duration + plan.phase2Duration
-
-  if (currentWeek <= phase1End) {
-    return 'Evaluación'
-  } else if (currentWeek <= phase2End) {
+  if (currentWeek <= plan.foundationsDuration) {
     return 'Fundamentos'
   } else {
     return 'Transición running'

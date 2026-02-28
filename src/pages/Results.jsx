@@ -51,11 +51,10 @@ const MOCK_PLAN = {
       exercises: ['single_leg_stand', 'balance_progression', 'stability_exercises']
     }
   ],
-  phase1Duration: 2,
-  phase2Duration: 10,
-  phase3Duration: 4,
+  foundationsDuration: 10,
+  transitionDuration: 4,
   estimatedWeeks: 10,
-  totalWeeks: 16
+  totalWeeks: 14
 }
 
 // ============================================================================
@@ -81,13 +80,11 @@ const SEVERITY_LABELS = {
 }
 
 const PHASE_COLORS = {
-  black: 'bg-black',
   orange: 'bg-accent-orange',
   pink: 'bg-accent-pink'
 }
 
 const PHASE_DOT = {
-  black: 'bg-black',
   orange: 'bg-accent-orange',
   pink: 'bg-accent-pink'
 }
@@ -113,37 +110,29 @@ function StatCard({ value, label }) {
   )
 }
 
-function PhaseTimeline({ phase1, phase2, phase3 }) {
-  const total = phase1 + phase2 + phase3
+function PhaseTimeline({ foundations, transition }) {
+  const total = foundations + transition
 
   return (
     <div className="mt-8">
       <div className="flex rounded-full overflow-hidden h-4">
         <div
-          className={`${PHASE_COLORS.black}`}
-          style={{ width: `${(phase1 / total) * 100}%` }}
-        />
-        <div
           className={`${PHASE_COLORS.orange}`}
-          style={{ width: `${(phase2 / total) * 100}%` }}
+          style={{ width: `${(foundations / total) * 100}%` }}
         />
         <div
           className={`${PHASE_COLORS.pink}`}
-          style={{ width: `${(phase3 / total) * 100}%` }}
+          style={{ width: `${(transition / total) * 100}%` }}
         />
       </div>
       <div className="flex mt-2 text-xs text-muted">
-        <div style={{ width: `${(phase1 / total) * 100}%` }} className="text-center">
-          <span className="font-medium text-black">Evaluación</span>
-          <br />{phase1} sem
-        </div>
-        <div style={{ width: `${(phase2 / total) * 100}%` }} className="text-center">
+        <div style={{ width: `${(foundations / total) * 100}%` }} className="text-center">
           <span className="font-medium text-accent-orange">Fundamentos</span>
-          <br />{phase2} sem
+          <br />{foundations} sem
         </div>
-        <div style={{ width: `${(phase3 / total) * 100}%` }} className="text-center">
+        <div style={{ width: `${(transition / total) * 100}%` }} className="text-center">
           <span className="font-medium text-accent-pink">Transición</span>
-          <br />{phase3} sem
+          <br />{transition} sem
         </div>
       </div>
     </div>
@@ -240,14 +229,7 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
 // TIMELINE HELPERS
 // ============================================================================
 
-function getPhase1Weeks(startWeek) {
-  return [
-    { week: startWeek, description: 'Tests iniciales — Evaluación completa de las 7 pruebas' },
-    { week: startWeek + 1, description: 'Repetición de tests base — Confirmar resultados iniciales' }
-  ]
-}
-
-function getPhase2Weeks(startWeek, duration) {
+function getFoundationsWeeks(startWeek, duration) {
   const weeks = []
   for (let i = 0; i < duration; i++) {
     const weekNum = startWeek + i
@@ -264,7 +246,7 @@ function getPhase2Weeks(startWeek, duration) {
   return weeks
 }
 
-function getPhase3Weeks(startWeek) {
+function getTransitionWeeks(startWeek) {
   return [
     { week: startWeek, description: 'Caminar 45min + 4x30s trote suave con 2min caminando' },
     { week: startWeek + 1, description: 'Caminar 40min + 6x45s trote con 90s caminando' },
@@ -378,9 +360,8 @@ export default function Results() {
     loadExercises()
   }, [plan])
 
-  const phase1Start = 1
-  const phase2Start = phase1Start + plan.phase1Duration
-  const phase3Start = phase2Start + plan.phase2Duration
+  const foundationsStart = 1
+  const transitionStart = 1 + plan.foundationsDuration
 
   return (
     <div className="min-h-screen bg-white">
@@ -423,9 +404,8 @@ export default function Results() {
               </div>
 
               <PhaseTimeline
-                phase1={plan.phase1Duration}
-                phase2={plan.phase2Duration}
-                phase3={plan.phase3Duration}
+                foundations={plan.foundationsDuration}
+                transition={plan.transitionDuration}
               />
             </>
           )}
@@ -478,27 +458,19 @@ export default function Results() {
 
             <div className="space-y-4">
               <PhaseBlock
-                color="black"
-                name="Fase 1 — Evaluación"
-                weekRange={`Semanas ${phase1Start}-${phase1Start + plan.phase1Duration - 1}`}
-                description="Establecemos tu línea base y confirmamos los resultados de tus pruebas iniciales."
-                weeks={getPhase1Weeks(phase1Start)}
+                color="orange"
+                name="Fase 1 — Fundamentos"
+                weekRange={`Semanas ${foundationsStart}-${foundationsStart + plan.foundationsDuration - 1}`}
+                description="Corregimos tus limitaciones con un plan progresivo de movilidad, activación y fuerza."
+                weeks={getFoundationsWeeks(foundationsStart, plan.foundationsDuration)}
                 defaultExpanded={true}
               />
               <PhaseBlock
-                color="orange"
-                name="Fase 2 — Fundamentos"
-                weekRange={`Semanas ${phase2Start}-${phase2Start + plan.phase2Duration - 1}`}
-                description="Corregimos tus limitaciones con un plan progresivo de movilidad, activación y fuerza."
-                weeks={getPhase2Weeks(phase2Start, plan.phase2Duration)}
-                defaultExpanded={false}
-              />
-              <PhaseBlock
                 color="pink"
-                name="Fase 3 — Transición a correr"
-                weekRange={`Semanas ${phase3Start}-${phase3Start + plan.phase3Duration - 1}`}
+                name="Fase 2 — Transición a correr"
+                weekRange={`Semanas ${transitionStart}-${transitionStart + plan.transitionDuration - 1}`}
                 description="Introducción gradual a la carrera con intervalos de caminar/trotar progresivos."
-                weeks={getPhase3Weeks(phase3Start)}
+                weeks={getTransitionWeeks(transitionStart)}
                 defaultExpanded={false}
               />
             </div>

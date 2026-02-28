@@ -104,9 +104,9 @@ export default function Landing() {
             <div className="hidden md:block absolute top-8 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-accent-orange via-accent-pink to-black" />
 
             {[
-              { color: 'bg-black', label: 'Semanas 1-2', title: 'Evaluación', desc: '7 tests específicos que identifican tus limitaciones individuales: tobillos, cadera, glúteos, core, flexibilidad, capacidad y equilibrio.' },
-              { color: 'bg-gradient-to-br from-accent-orange to-accent-pink', label: 'Semanas 3-10', title: 'Fundamentos', desc: 'Plan personalizado para corregir tus disfunciones: movilidad, activación, fuerza y capacidad aeróbica.' },
-              { color: 'bg-black', label: 'Semanas 9-12', title: 'Transición', desc: 'Introducción gradual al running. Tu cuerpo ya está preparado para correr de forma segura y sostenible.' },
+              { color: 'bg-black', label: 'Paso previo', title: 'Evaluación', desc: '7 tests específicos que realizas hoy, una sola vez, para identificar tus limitaciones individuales: tobillos, cadera, glúteos, core, flexibilidad, capacidad y equilibrio.' },
+              { color: 'bg-gradient-to-br from-accent-orange to-accent-pink', label: 'Semanas 1-10', title: 'Fundamentos', desc: 'Plan personalizado para corregir tus disfunciones: movilidad, activación, fuerza y capacidad aeróbica.' },
+              { color: 'bg-black', label: 'Semanas 7-14', title: 'Transición', desc: 'Introducción gradual al running. Tu cuerpo ya está preparado para correr de forma segura y sostenible.' },
             ].map((phase) => (
               <div key={phase.title} className="text-center">
                 <div className={`w-16 h-16 ${phase.color} text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-4 relative z-10`}>

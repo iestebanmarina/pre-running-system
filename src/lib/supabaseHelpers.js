@@ -166,10 +166,10 @@ export async function savePlan(planData, userId, assessmentId) {
       priorities: planData.priorities || [],
 
       // Duration breakdown
-      estimated_weeks: planData.estimatedWeeks || planData.phase2Duration,
-      phase_1_duration: planData.phase1Duration || 2,
-      phase_2_duration: planData.phase2Duration,
-      phase_3_duration: planData.phase3Duration || 4,
+      estimated_weeks: planData.estimatedWeeks || planData.foundationsDuration,
+      phase_1_duration: 0,
+      phase_2_duration: planData.foundationsDuration,
+      phase_3_duration: planData.transitionDuration || 4,
       total_weeks: planData.totalWeeks,
 
       // Plan metadata
@@ -257,9 +257,8 @@ export function normalizePlan(planFromDb) {
     assessmentId: planFromDb.assessment_id,
     priorities: planFromDb.priorities,
     estimatedWeeks: planFromDb.estimated_weeks,
-    phase1Duration: planFromDb.phase_1_duration,
-    phase2Duration: planFromDb.phase_2_duration,
-    phase3Duration: planFromDb.phase_3_duration,
+    foundationsDuration: planFromDb.phase_2_duration,
+    transitionDuration: planFromDb.phase_3_duration,
     totalWeeks: planFromDb.total_weeks,
     status: planFromDb.status,
     currentWeek: planFromDb.current_week,

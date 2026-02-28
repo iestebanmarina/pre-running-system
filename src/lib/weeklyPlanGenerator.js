@@ -262,72 +262,16 @@ function estimateSessionDuration(exercises) {
 // ============================================================================
 
 /**
- * Generates assessment phase weeks (Phase 1).
- * Static structure: tests distributed across Mon/Wed/Fri.
- *
- * @param {number} weekNumber - absolute week number (1 or 2)
- * @returns {Object} week object
- */
-function generateAssessmentWeek(weekNumber) {
-  const isFirstWeek = weekNumber === 1
-
-  return {
-    weekNumber,
-    phase: 'assessment',
-    phaseName: 'Evaluación',
-    sessions: [
-      {
-        day: 'monday',
-        type: 'assessment',
-        duration: 20,
-        exercises: [],
-        notes: isFirstWeek
-          ? 'Tests 1-3: Dorsiflexión tobillo, Extensión cadera, Activación glúteo'
-          : 'Re-test 1-3: Confirmar resultados iniciales'
-      },
-      { day: 'tuesday', type: 'rest', duration: 0, exercises: [], notes: 'Descanso' },
-      {
-        day: 'wednesday',
-        type: 'assessment',
-        duration: 15,
-        exercises: [],
-        notes: isFirstWeek
-          ? 'Tests 4-5: Core (plancha), Cadena posterior (flexibilidad)'
-          : 'Re-test 4-5: Confirmar resultados iniciales'
-      },
-      { day: 'thursday', type: 'rest', duration: 0, exercises: [], notes: 'Descanso' },
-      {
-        day: 'friday',
-        type: 'assessment',
-        duration: 15,
-        exercises: [],
-        notes: isFirstWeek
-          ? 'Tests 6-7: Capacidad aeróbica, Equilibrio'
-          : 'Re-test 6-7: Confirmar resultados iniciales'
-      },
-      {
-        day: 'saturday',
-        type: 'rest',
-        duration: 0,
-        exercises: [],
-        notes: 'Descanso activo: caminata suave 20-30min (opcional)'
-      },
-      { day: 'sunday', type: 'rest', duration: 0, exercises: [], notes: 'Descanso' }
-    ]
-  }
-}
-
-/**
  * Distributes exercises into session slots for a Foundations week.
  *
  * @param {Array} priorities
  * @param {Object} exercisesData
- * @param {number} weekIndex - 0-based index within Phase 2
- * @param {number} phase2Duration - total weeks in Phase 2
+ * @param {number} weekIndex - 0-based index within Foundations phase
+ * @param {number} foundationsDuration - total weeks in Foundations phase
  * @returns {Object} map of day -> exercise array
  */
-function distributeFoundationsExercises(priorities, exercisesData, weekIndex, phase2Duration) {
-  const progressionFactor = phase2Duration <= 1 ? 0.5 : weekIndex / (phase2Duration - 1)
+function distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration) {
+  const progressionFactor = foundationsDuration <= 1 ? 0.5 : weekIndex / (foundationsDuration - 1)
   const hasPriorities = priorities.length > 0
 
   // Classify exercises
@@ -453,18 +397,18 @@ function buildExerciseList(exerciseIds, exercisesData, progressionFactor) {
 }
 
 /**
- * Generates a single Foundations week (Phase 2).
+ * Generates a single Foundations week (Phase 1).
  *
  * @param {number} weekNumber - absolute week number
- * @param {number} weekIndex - 0-based index within Phase 2
+ * @param {number} weekIndex - 0-based index within Foundations phase
  * @param {Array} priorities
  * @param {Object} exercisesData
- * @param {number} phase2Duration
+ * @param {number} foundationsDuration
  * @returns {Object} week object
  */
-function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesData, phase2Duration) {
-  const dayExercises = distributeFoundationsExercises(priorities, exercisesData, weekIndex, phase2Duration)
-  const progressionFactor = phase2Duration <= 1 ? 0.5 : weekIndex / (phase2Duration - 1)
+function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesData, foundationsDuration) {
+  const dayExercises = distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration)
+  const progressionFactor = foundationsDuration <= 1 ? 0.5 : weekIndex / (foundationsDuration - 1)
 
   // Progression tier for notes
   let tierNote
@@ -573,7 +517,7 @@ function generateTransitionWeek(weekNumber, weekIndex, priorities, exercisesData
  * Generates a complete week-by-week plan from the personalization output.
  *
  * @param {Object} plan - plan object from generatePersonalizedPlan().plan
- *   Required fields: priorities, phase1Duration, phase2Duration, phase3Duration, totalWeeks
+ *   Required fields: priorities, foundationsDuration, transitionDuration, totalWeeks
  * @param {Object} [exercisesData={}] - { exerciseId: { category, sets, reps, hold_seconds, duration_minutes, ... } }
  * @returns {{ weeks: Array, totalWeeks: number }}
  *
@@ -594,26 +538,22 @@ export function generateWeeklyPlan(plan, exercisesData = {}) {
 
   const {
     priorities = [],
-    phase1Duration = 2,
-    phase2Duration = 6,
-    phase3Duration = 4,
+    foundationsDuration = 6,
+    transitionDuration = 4,
     totalWeeks: expectedTotal
   } = plan
 
-  const totalWeeks = expectedTotal || (phase1Duration + phase2Duration + phase3Duration)
+  const totalWeeks = expectedTotal || (foundationsDuration + transitionDuration)
   const weeks = []
 
   for (let w = 1; w <= totalWeeks; w++) {
-    if (w <= phase1Duration) {
-      // Phase 1: Assessment
-      weeks.push(generateAssessmentWeek(w))
-    } else if (w <= phase1Duration + phase2Duration) {
-      // Phase 2: Foundations
-      const weekIndex = w - phase1Duration - 1 // 0-based within phase 2
-      weeks.push(generateFoundationsWeek(w, weekIndex, priorities, exercisesData, phase2Duration))
+    if (w <= foundationsDuration) {
+      // Phase 1: Foundations
+      const weekIndex = w - 1 // 0-based within Foundations
+      weeks.push(generateFoundationsWeek(w, weekIndex, priorities, exercisesData, foundationsDuration))
     } else {
-      // Phase 3: Transition
-      const weekIndex = w - phase1Duration - phase2Duration - 1 // 0-based within phase 3
+      // Phase 2: Transition
+      const weekIndex = w - foundationsDuration - 1 // 0-based within Transition
       weeks.push(generateTransitionWeek(w, weekIndex, priorities, exercisesData))
     }
   }
