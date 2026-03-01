@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, ResponsiveContainer } from 'recharts'
 import Button from '../components/ui/Button'
 import { getExercisesByIds } from '../lib/exerciseHelpers'
 import ExerciseCard from '../components/exercises/ExerciseCard'
@@ -247,6 +248,161 @@ function PriorityCard({ priority, exercisesData, loadingExercises }) {
 }
 
 // ============================================================================
+// COMPARISON RADAR CHART
+// ============================================================================
+
+/**
+ * Normalizes a raw assessment value to a 0-100 score for radar chart display.
+ * Higher = better for all metrics.
+ */
+const RADAR_METRICS = [
+  {
+    key: 'ankle',
+    label: 'Tobillo',
+    extract: (data) => Math.min(data.ankle_rom_right, data.ankle_rom_left),
+    normalize: (v) => Math.min(100, (v / 15) * 100), // 15cm = 100%
+    unit: 'cm',
+    format: (v) => `${v.toFixed(1)} cm`
+  },
+  {
+    key: 'hip',
+    label: 'Cadera',
+    extract: (data) => Math.min(data.hip_extension_right, data.hip_extension_left),
+    normalize: (v) => Math.min(100, ((v + 15) / 30) * 100), // -15° to +15° → 0-100
+    unit: '°',
+    format: (v) => `${v.toFixed(0)}°`
+  },
+  {
+    key: 'core',
+    label: 'Core',
+    extract: (data) => data.core_plank_time,
+    normalize: (v) => Math.min(100, (v / 90) * 100), // 90s = 100%
+    unit: 's',
+    format: (v) => `${Math.round(v)}s`
+  },
+  {
+    key: 'balance',
+    label: 'Equilibrio',
+    extract: (data) => Math.min(data.balance_right, data.balance_left),
+    normalize: (v) => Math.min(100, (v / 60) * 100), // 60s = 100%
+    unit: 's',
+    format: (v) => `${Math.round(v)}s`
+  },
+  {
+    key: 'posterior',
+    label: 'Cadena posterior',
+    extract: (data) => {
+      const map = { toes: 100, shins: 75, knees: 50, thighs: 25 }
+      return map[data.posterior_chain_flexibility] ?? 50
+    },
+    normalize: (v) => v,
+    unit: '%',
+    format: (v) => `${Math.round(v)}%`
+  },
+  {
+    key: 'aerobic',
+    label: 'Cap. aeróbica',
+    extract: (data) => {
+      const map = { '45min_easy': 100, '30-45min_mild': 60, 'under_30min_hard': 25 }
+      return map[data.aerobic_capacity] ?? 50
+    },
+    normalize: (v) => v,
+    unit: '%',
+    format: (v) => `${Math.round(v)}%`
+  }
+]
+
+function buildRadarData(currentAssessment, previousAssessment) {
+  return RADAR_METRICS.map(metric => {
+    const currentRaw = metric.extract(currentAssessment)
+    const previousRaw = previousAssessment ? metric.extract(previousAssessment) : null
+
+    return {
+      metric: metric.label,
+      actual: metric.normalize(currentRaw),
+      anterior: previousRaw != null ? metric.normalize(previousRaw) : null,
+      currentFormatted: metric.format(currentRaw),
+      previousFormatted: previousRaw != null ? metric.format(previousRaw) : null,
+      improvement: previousRaw != null ? metric.normalize(currentRaw) - metric.normalize(previousRaw) : null
+    }
+  })
+}
+
+function ComparisonRadarChart({ currentAssessment, previousAssessment }) {
+  const data = buildRadarData(currentAssessment, previousAssessment)
+  const hasComparison = previousAssessment != null
+
+  return (
+    <div className="bg-white rounded-2xl shadow-card border border-border p-6">
+      <h3 className="font-semibold text-black text-lg mb-1">
+        {hasComparison ? 'Tu progreso vs. evaluación anterior' : 'Tu perfil actual'}
+      </h3>
+      {hasComparison && (
+        <p className="text-sm text-muted mb-4">
+          Compara tus resultados actuales con tu evaluación inicial
+        </p>
+      )}
+
+      <div className="w-full" style={{ height: 320 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={data} cx="50%" cy="50%" outerRadius="75%">
+            <PolarGrid stroke="#e5e5e5" />
+            <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12, fill: '#737373' }} />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
+            <Radar
+              name="Actual"
+              dataKey="actual"
+              stroke="#FF6B35"
+              fill="#FF6B35"
+              fillOpacity={0.3}
+              strokeWidth={2}
+            />
+            {hasComparison && (
+              <Radar
+                name="Anterior"
+                dataKey="anterior"
+                stroke="#737373"
+                fill="#737373"
+                fillOpacity={0.1}
+                strokeWidth={1.5}
+                strokeDasharray="4 4"
+              />
+            )}
+            <Legend />
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Improvement details */}
+      {hasComparison && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+          {data.map(item => {
+            const improved = item.improvement > 0
+            const unchanged = item.improvement === 0
+            return (
+              <div key={item.metric} className="text-center p-3 rounded-xl bg-surface">
+                <div className="text-xs text-muted mb-1">{item.metric}</div>
+                <div className="text-sm font-semibold text-black">
+                  {item.previousFormatted} → {item.currentFormatted}
+                </div>
+                {item.improvement != null && (
+                  <div className={`text-xs font-medium mt-0.5 ${
+                    improved ? 'text-green-600' : unchanged ? 'text-muted' : 'text-accent-pink'
+                  }`}>
+                    {improved ? '+' : ''}{Math.round(item.improvement)}%
+                    {improved ? ' mejora' : unchanged ? ' sin cambio' : ' retroceso'}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
 // TIMELINE HELPERS
 // ============================================================================
 
@@ -336,6 +492,9 @@ export default function Results() {
   const plan = location.state?.plan ?? MOCK_PLAN
   const highCount = plan.priorities.filter(p => p.severity === 'HIGH').length
   const noPriorities = plan.priorities.length === 0
+  const isReEvaluation = location.state?.isReEvaluation || false
+  const rawAssessment = location.state?.rawAssessment || null
+  const previousRawAssessment = location.state?.previousRawAssessment || null
 
   const [exercisesData, setExercisesData] = useState({})
   const [loadingExercises, setLoadingExercises] = useState(true)
@@ -402,7 +561,7 @@ export default function Results() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Evaluación completada
+              {isReEvaluation ? 'Re-evaluación completada' : 'Evaluación completada'}
             </span>
           </div>
 
@@ -467,6 +626,26 @@ export default function Results() {
           )}
         </div>
       </section>
+
+      {/* SECTION 2.5: COMPARISON RADAR CHART */}
+      {rawAssessment && (
+        <section className="bg-surface px-4 py-8 md:py-12">
+          <div className="max-w-3xl mx-auto">
+            {isReEvaluation && previousRawAssessment && (
+              <div className="mb-6 bg-green-50 border border-green-200 rounded-2xl p-4 text-center">
+                <h3 className="font-semibold text-green-800 text-lg">Re-evaluación completada</h3>
+                <p className="text-green-700 text-sm mt-1">
+                  Compara tus resultados actuales con tu evaluación inicial
+                </p>
+              </div>
+            )}
+            <ComparisonRadarChart
+              currentAssessment={rawAssessment}
+              previousAssessment={previousRawAssessment}
+            />
+          </div>
+        </section>
+      )}
 
       {/* SECTION 3: TIMELINE */}
       {!noPriorities && (

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import ScreeningStep from '../components/assessment/ScreeningStep'
+import UserProfileStep from '../components/assessment/UserProfileStep'
 import AnkleROMTest from '../components/assessment/AnkleROMTest'
 import HipExtensionTest from '../components/assessment/HipExtensionTest'
 import GluteActivationTest from '../components/assessment/GluteActivationTest'
@@ -14,11 +15,15 @@ import { saveAssessment, savePlan } from '../lib/supabaseHelpers'
 
 const Assessment = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isReEvaluation = location.state?.isReEvaluation || false
+  const previousPlan = location.state?.previousPlan || null
   const [currentStep, setCurrentStep] = useState(0)
   const [assessmentData, setAssessmentData] = useState({})
 
   const tests = [
     { id: 0, name: 'Screening', component: ScreeningStep },
+    { id: 'P', name: 'Tu perfil', component: UserProfileStep },
     { id: 1, name: 'Ankle ROM', component: AnkleROMTest },
     { id: 2, name: 'Hip Extension', component: HipExtensionTest },
     { id: 3, name: 'Glute Activation', component: GluteActivationTest },
@@ -90,11 +95,24 @@ const Assessment = () => {
       console.error('Unexpected error during save:', error)
     }
 
+    // Store assessment for future comparison
+    const previousRawAssessment = isReEvaluation
+      ? JSON.parse(localStorage.getItem('pre_running_initial_assessment') || 'null')
+      : null
+
+    if (!isReEvaluation) {
+      localStorage.setItem('pre_running_initial_assessment', JSON.stringify(completeData))
+    }
+
     navigate('/results', {
       state: {
         plan: result.plan,
         metadata: result.metadata,
-        warnings: result.warnings
+        warnings: result.warnings,
+        rawAssessment: completeData,
+        isReEvaluation,
+        previousPlan,
+        previousRawAssessment
       }
     })
   }

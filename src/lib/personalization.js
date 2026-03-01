@@ -756,7 +756,14 @@ export function generatePersonalizedPlan(assessmentData) {
     assessmentData.aerobic_capacity === '30-45min_mild' ? 'standard' : 'standard'
   )
 
-  // Step 7: Return complete plan
+  // Step 7: Extract user profile for schedule customization
+  const userProfile = {
+    availableDays: assessmentData.profile_available_days || ['monday', 'wednesday', 'friday', 'saturday'],
+    sessionDuration: assessmentData.profile_session_duration || 35,
+    equipment: assessmentData.profile_equipment || 'bodyweight'
+  }
+
+  // Step 8: Return complete plan
   const highPriorities = priorities.filter(p => p.severity === 'HIGH').length
   const mediumPriorities = priorities.filter(p => p.severity === 'MEDIUM').length
   const hasAsymmetry = priorities.some(p => p.asymmetry?.present)
@@ -770,7 +777,8 @@ export function generatePersonalizedPlan(assessmentData) {
       estimatedWeeks: duration.estimatedWeeks,
       totalWeeks: duration.totalWeeks,
       deloadWeeks: duration.deloadWeeks,
-      aerobicLevel
+      aerobicLevel,
+      userProfile
     },
     warnings: validation.warnings,
     metadata: {

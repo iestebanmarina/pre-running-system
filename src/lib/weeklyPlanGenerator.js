@@ -32,10 +32,9 @@ const DEFAULT_EXERCISE_PARAMS = {
 }
 
 /**
- * Foundations phase (Phase 2) weekly template.
- * Maps each day to a session type.
+ * Default foundations template (used when no user profile).
  */
-const FOUNDATIONS_TEMPLATE = {
+const DEFAULT_FOUNDATIONS_TEMPLATE = {
   monday: 'mobility_activation',
   tuesday: 'strength',
   wednesday: 'mobility_activation',
@@ -46,10 +45,9 @@ const FOUNDATIONS_TEMPLATE = {
 }
 
 /**
- * Transition phase (Phase 3) weekly template.
- * Maps each day to a session type.
+ * Default transition template (used when no user profile).
  */
-const TRANSITION_TEMPLATE = {
+const DEFAULT_TRANSITION_TEMPLATE = {
   monday: 'maintenance',
   tuesday: 'running',
   wednesday: 'rest',
@@ -57,6 +55,115 @@ const TRANSITION_TEMPLATE = {
   friday: 'maintenance',
   saturday: 'running',
   sunday: 'rest'
+}
+
+/**
+ * Builds a dynamic Foundations week template from available days.
+ *
+ * Rules:
+ * - 3 days: [mobility_activation, strength, capacity]
+ * - 4 days: [mobility_activation, strength, mobility_activation, capacity]
+ * - 5 days: [mobility_activation, strength, mobility_activation, strength, capacity]
+ * - 6+ days: [mobility_activation, strength, mobility_activation, strength, capacity, mobility_activation]
+ * - No two consecutive strength sessions
+ *
+ * @param {string[]} availableDays - e.g. ['monday', 'wednesday', 'friday', 'saturday']
+ * @returns {Object} Map of day -> session type
+ */
+function buildFoundationsTemplate(availableDays) {
+  if (!availableDays || availableDays.length < 3) {
+    return DEFAULT_FOUNDATIONS_TEMPLATE
+  }
+
+  // Sort by day order
+  const sorted = availableDays
+    .filter(d => DAYS.includes(d))
+    .sort((a, b) => DAYS.indexOf(a) - DAYS.indexOf(b))
+
+  if (sorted.length < 3) return DEFAULT_FOUNDATIONS_TEMPLATE
+
+  // Assign session types based on count
+  const sessionTypes = []
+  const count = sorted.length
+
+  if (count === 3) {
+    sessionTypes.push('mobility_activation', 'strength', 'capacity')
+  } else if (count === 4) {
+    sessionTypes.push('mobility_activation', 'strength', 'mobility_activation', 'capacity')
+  } else if (count === 5) {
+    sessionTypes.push('mobility_activation', 'strength', 'mobility_activation', 'strength', 'capacity')
+  } else {
+    sessionTypes.push('mobility_activation', 'strength', 'mobility_activation', 'strength', 'capacity', 'mobility_activation')
+    // Fill remaining with alternating mob/act
+    for (let i = 6; i < count; i++) {
+      sessionTypes.push('mobility_activation')
+    }
+  }
+
+  // Ensure no two consecutive strength sessions
+  for (let i = 1; i < sessionTypes.length; i++) {
+    if (sessionTypes[i] === 'strength' && sessionTypes[i - 1] === 'strength') {
+      sessionTypes[i] = 'mobility_activation'
+    }
+  }
+
+  // Build template: all days default to rest, then assign sorted days
+  const template = {}
+  for (const day of DAYS) {
+    template[day] = 'rest'
+  }
+  sorted.forEach((day, i) => {
+    template[day] = sessionTypes[i] || 'mobility_activation'
+  })
+
+  return template
+}
+
+/**
+ * Builds a dynamic Transition week template from available days.
+ *
+ * Assigns running days (up to 3) and maintenance days, ensuring
+ * no two consecutive running sessions.
+ *
+ * @param {string[]} availableDays
+ * @returns {Object} Map of day -> session type
+ */
+function buildTransitionTemplate(availableDays) {
+  if (!availableDays || availableDays.length < 3) {
+    return DEFAULT_TRANSITION_TEMPLATE
+  }
+
+  const sorted = availableDays
+    .filter(d => DAYS.includes(d))
+    .sort((a, b) => DAYS.indexOf(a) - DAYS.indexOf(b))
+
+  if (sorted.length < 3) return DEFAULT_TRANSITION_TEMPLATE
+
+  const template = {}
+  for (const day of DAYS) {
+    template[day] = 'rest'
+  }
+
+  // Spread running days evenly (max 3), fill rest with maintenance
+  const maxRunning = Math.min(3, Math.ceil(sorted.length / 2))
+  const runningIndices = []
+
+  // Pick evenly spaced indices for running
+  for (let i = 0; i < maxRunning; i++) {
+    const idx = Math.round(i * (sorted.length - 1) / Math.max(maxRunning - 1, 1))
+    runningIndices.push(idx)
+  }
+
+  // Ensure no two consecutive running days
+  sorted.forEach((day, i) => {
+    if (runningIndices.includes(i)) {
+      template[day] = 'running'
+    } else {
+      template[day] = 'maintenance'
+    }
+  })
+
+  return template
 }
 
 /**
@@ -163,6 +270,40 @@ const RUNNING_PROGRESSIONS = {
 const RUNNING_PROGRESSION = RUNNING_PROGRESSIONS.standard
 
 const MAX_SESSION_MINUTES = 60
+
+/**
+ * Equipment requirements for exercises.
+ * Exercises not listed here are assumed to be bodyweight-only.
+ */
+const EXERCISE_EQUIPMENT = {
+  hip_thrust: ['resistance_band', 'full_gym'],
+  bulgarian_split_squat: ['bodyweight', 'resistance_band', 'full_gym'],
+  banded_walks: ['resistance_band', 'full_gym'],
+  pallof_press: ['resistance_band', 'full_gym'],
+  romanian_deadlift_bodyweight: ['bodyweight', 'resistance_band', 'full_gym'],
+  single_leg_rdl: ['bodyweight', 'resistance_band', 'full_gym'],
+  step_ups: ['bodyweight', 'resistance_band', 'full_gym'],
+  incline_walking: ['full_gym'],
+  tibialis_anterior_strengthening: ['resistance_band', 'full_gym']
+}
+
+/**
+ * Filters exercise IDs by equipment availability.
+ *
+ * @param {string[]} exerciseIds
+ * @param {string} equipment - 'bodyweight' | 'resistance_band' | 'full_gym'
+ * @returns {string[]} Filtered exercise IDs
+ */
+function filterByEquipment(exerciseIds, equipment) {
+  if (!equipment || equipment === 'full_gym') return exerciseIds
+
+  return exerciseIds.filter(id => {
+    const required = EXERCISE_EQUIPMENT[id]
+    // If not in map, it's bodyweight-only → always available
+    if (!required) return true
+    return required.includes(equipment)
+  })
+}
 
 /**
  * Regex patterns to infer exercise category from its ID when not in exercisesData.
@@ -422,11 +563,8 @@ function estimateSessionDuration(exercises) {
 // ============================================================================
 
 /**
- * Calculates how many minutes each session type should have per session,
- * based on the total weeklyMinutes from priorities.
- *
- * Template: Mon=mob/act, Tue=strength, Wed=mob/act, Thu=rest, Fri=strength, Sat=capacity
- * So: 2 mob/act sessions, 2 strength sessions, 1 capacity session per week.
+ * Calculates total weekly minutes per session type from priorities.
+ * These totals are then divided by actual session count in distributeFoundationsExercises.
  *
  * @param {Array} priorities
  * @returns {{ mobilityActivation: number, strength: number, capacity: number }}
@@ -452,15 +590,13 @@ function calculateTargetMinutesPerSession(priorities) {
     }
   }
 
-  // Minimum session durations
+  // Return per-session values assuming 2 mob/act, 2 strength, 1 capacity
+  // These are adjusted by actual session counts in distributeFoundationsExercises
   const MIN_SESSION = 15
 
   return {
-    // 2 mob/act sessions per week
     mobilityActivation: Math.max(MIN_SESSION, Math.round(mobActTotal / 2)),
-    // 2 strength sessions per week
     strength: Math.max(MIN_SESSION, Math.round(strengthTotal / 2)),
-    // 1 capacity session per week
     capacity: Math.max(30, Math.round(capacityTotal))
   }
 }
@@ -543,9 +679,10 @@ function buildExerciseListForDuration(exerciseIds, exercisesData, progressionFac
  * @param {Object} exercisesData
  * @param {number} weekIndex - 0-based index within Foundations phase
  * @param {number} foundationsDuration - total weeks in Foundations phase
+ * @param {Object} [userProfile] - { availableDays, sessionDuration, equipment }
  * @returns {Object} map of day -> exercise array
  */
-function distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration) {
+function distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration, userProfile = null) {
   const progressionFactor = foundationsDuration <= 1 ? 0.5 : weekIndex / (foundationsDuration - 1)
   const hasPriorities = priorities.length > 0
 
@@ -570,62 +707,86 @@ function distributeFoundationsExercises(priorities, exercisesData, weekIndex, fo
     : { mobilityActivation: 20, strength: 20, capacity: 30 }
 
   // Build exercise pools, prioritizing HIGH severity exercises first
+  const equipment = userProfile?.equipment || 'bodyweight'
+
   const highMobAct = classified.mobilityActivation.filter(e => e.severity === 'HIGH').map(e => e.exerciseId)
   const medMobAct = classified.mobilityActivation.filter(e => e.severity !== 'HIGH').map(e => e.exerciseId)
-  const mobActPool = [...highMobAct, ...medMobAct]
+  const mobActPool = filterByEquipment([...highMobAct, ...medMobAct], equipment)
 
   const highStrength = classified.strength.filter(e => e.severity === 'HIGH').map(e => e.exerciseId)
   const medStrength = classified.strength.filter(e => e.severity !== 'HIGH').map(e => e.exerciseId)
-  let strengthPool = [...highStrength, ...medStrength]
+  let strengthPool = filterByEquipment([...highStrength, ...medStrength], equipment)
   if (strengthPool.length === 0 && hasPriorities) {
-    strengthPool = GENERAL_MAINTENANCE_EXERCISES.strength
+    strengthPool = filterByEquipment(GENERAL_MAINTENANCE_EXERCISES.strength, equipment)
   }
 
-  const capacityPool = classified.capacity.map(e => e.exerciseId)
+  const capacityPool = filterByEquipment(classified.capacity.map(e => e.exerciseId), equipment)
+
+  // Build dynamic template from user's available days
+  const template = buildFoundationsTemplate(userProfile?.availableDays)
+
+  // Cap session duration from user preference
+  const maxSessionDuration = userProfile?.sessionDuration || MAX_SESSION_MINUTES
+
+  // Count session types in template to adjust per-session minutes
+  const sessionTypeCounts = {}
+  for (const type of Object.values(template)) {
+    if (type !== 'rest') {
+      sessionTypeCounts[type] = (sessionTypeCounts[type] || 0) + 1
+    }
+  }
+
+  // Recalculate target minutes per session based on actual session count
+  const mobActSessions = sessionTypeCounts['mobility_activation'] || 2
+  const strengthSessions = sessionTypeCounts['strength'] || 2
+  const capacitySessions = sessionTypeCounts['capacity'] || 1
+
+  const adjustedTargets = {
+    mobilityActivation: Math.min(
+      Math.max(15, Math.round(targetMinutes.mobilityActivation * 2 / mobActSessions)),
+      maxSessionDuration
+    ),
+    strength: Math.min(
+      Math.max(15, Math.round(targetMinutes.strength * 2 / strengthSessions)),
+      maxSessionDuration
+    ),
+    capacity: Math.min(targetMinutes.capacity, maxSessionDuration)
+  }
+
   const dayExercises = {}
 
-  // --- Monday (mobility_activation) ---
-  dayExercises.monday = buildExerciseListForDuration(
-    mobActPool, exercisesData, progressionFactor, targetMinutes.mobilityActivation, 0, weekIndex
-  )
+  for (const day of DAYS) {
+    const type = template[day]
+    const dayIndex = DAYS.indexOf(day)
 
-  // --- Tuesday (strength) ---
-  dayExercises.tuesday = buildExerciseListForDuration(
-    strengthPool, exercisesData, progressionFactor, targetMinutes.strength, 1, weekIndex
-  )
-
-  // --- Wednesday (mobility_activation) — different subset from Monday ---
-  dayExercises.wednesday = buildExerciseListForDuration(
-    mobActPool, exercisesData, progressionFactor, targetMinutes.mobilityActivation, 2, weekIndex
-  )
-
-  // --- Thursday (rest) ---
-  dayExercises.thursday = []
-
-  // --- Friday (strength) — different subset from Tuesday ---
-  dayExercises.friday = buildExerciseListForDuration(
-    strengthPool, exercisesData, progressionFactor, targetMinutes.strength, 4, weekIndex
-  )
-
-  // --- Saturday (capacity) ---
-  const satPool = capacityPool.length > 0 ? capacityPool : ['walking_progression']
-  const capacityDuration = Math.min(
-    Math.round(30 + progressionFactor * 30), // 30min -> 60min progression
-    targetMinutes.capacity,
-    MAX_SESSION_MINUTES
-  )
-  const satIds = selectExercisesForDay(satPool, 5, weekIndex, 1)
-  dayExercises.saturday = satIds.map(id => ({
-    exerciseId: id,
-    sets: 1,
-    reps: null,
-    holdSeconds: null,
-    durationMinutes: capacityDuration,
-    notes: `Duración: ${capacityDuration} min`
-  }))
-
-  // --- Sunday (rest) ---
-  dayExercises.sunday = []
+    if (type === 'rest') {
+      dayExercises[day] = []
+    } else if (type === 'mobility_activation') {
+      dayExercises[day] = buildExerciseListForDuration(
+        mobActPool, exercisesData, progressionFactor, adjustedTargets.mobilityActivation, dayIndex, weekIndex
+      )
+    } else if (type === 'strength') {
+      dayExercises[day] = buildExerciseListForDuration(
+        strengthPool, exercisesData, progressionFactor, adjustedTargets.strength, dayIndex, weekIndex
+      )
+    } else if (type === 'capacity') {
+      const capPool = capacityPool.length > 0 ? capacityPool : ['walking_progression']
+      const capacityDuration = Math.min(
+        Math.round(30 + progressionFactor * 30),
+        adjustedTargets.capacity,
+        maxSessionDuration
+      )
+      const capIds = selectExercisesForDay(capPool, dayIndex, weekIndex, 1)
+      dayExercises[day] = capIds.map(id => ({
+        exerciseId: id,
+        sets: 1,
+        reps: null,
+        holdSeconds: null,
+        durationMinutes: capacityDuration,
+        notes: `Duración: ${capacityDuration} min`
+      }))
+    }
+  }
 
   return dayExercises
 }
@@ -686,9 +847,10 @@ function buildExerciseList(exerciseIds, exercisesData, progressionFactor) {
  * @param {number} foundationsDuration
  * @returns {Object} week object
  */
-function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesData, foundationsDuration, isDeload = false) {
-  const dayExercises = distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration)
+function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesData, foundationsDuration, isDeload = false, userProfile = null) {
+  const dayExercises = distributeFoundationsExercises(priorities, exercisesData, weekIndex, foundationsDuration, userProfile)
   const progressionFactor = foundationsDuration <= 1 ? 0.5 : weekIndex / (foundationsDuration - 1)
+  const template = buildFoundationsTemplate(userProfile?.availableDays)
 
   // Progression tier for notes
   let tierNote
@@ -703,7 +865,7 @@ function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesDat
   }
 
   const sessions = DAYS.map(day => {
-    const type = FOUNDATIONS_TEMPLATE[day]
+    const type = template[day]
     let exercises = dayExercises[day] || []
 
     // Apply deload: reduce sets by 40% (volume × 0.6), keep exercises and frequency
@@ -745,18 +907,23 @@ function generateFoundationsWeek(weekNumber, weekIndex, priorities, exercisesDat
  * @param {string} aerobicLevel - 'beginner' | 'standard' | 'advanced'
  * @returns {Object} week object
  */
-function generateTransitionWeek(weekNumber, weekIndex, priorities, exercisesData, aerobicLevel = 'standard') {
+function generateTransitionWeek(weekNumber, weekIndex, priorities, exercisesData, aerobicLevel = 'standard', userProfile = null) {
   const progression = RUNNING_PROGRESSIONS[aerobicLevel] || RUNNING_PROGRESSIONS.standard
   const runProgression = progression[Math.min(weekIndex, progression.length - 1)]
+  const template = buildTransitionTemplate(userProfile?.availableDays)
+  const equipment = userProfile?.equipment || 'bodyweight'
 
   // For maintenance days, pick top exercises from HIGH priorities
   const highPriorities = priorities.filter(p => p.severity === 'HIGH')
-  const maintenanceExerciseIds = highPriorities.length > 0
-    ? highPriorities.flatMap(p => p.exercises).slice(0, 6)
-    : GENERAL_MAINTENANCE_EXERCISES.mobility_activation.slice(0, 4)
+  const maintenanceExerciseIds = filterByEquipment(
+    highPriorities.length > 0
+      ? highPriorities.flatMap(p => p.exercises).slice(0, 6)
+      : GENERAL_MAINTENANCE_EXERCISES.mobility_activation.slice(0, 4),
+    equipment
+  )
 
   const sessions = DAYS.map(day => {
-    const type = TRANSITION_TEMPLATE[day]
+    const type = template[day]
 
     if (type === 'running') {
       return {
@@ -838,7 +1005,8 @@ export function generateWeeklyPlan(plan, exercisesData = {}) {
     transitionDuration = 4,
     totalWeeks: expectedTotal,
     deloadWeeks = [],
-    aerobicLevel = 'standard'
+    aerobicLevel = 'standard',
+    userProfile = null
   } = plan
 
   const totalWeeks = expectedTotal || (foundationsDuration + transitionDuration)
@@ -849,11 +1017,11 @@ export function generateWeeklyPlan(plan, exercisesData = {}) {
       // Phase 1: Foundations
       const weekIndex = w - 1 // 0-based within Foundations
       const isDeload = deloadWeeks.includes(w)
-      weeks.push(generateFoundationsWeek(w, weekIndex, priorities, exercisesData, foundationsDuration, isDeload))
+      weeks.push(generateFoundationsWeek(w, weekIndex, priorities, exercisesData, foundationsDuration, isDeload, userProfile))
     } else {
       // Phase 2: Transition
       const weekIndex = w - foundationsDuration - 1 // 0-based within Transition
-      weeks.push(generateTransitionWeek(w, weekIndex, priorities, exercisesData, aerobicLevel))
+      weeks.push(generateTransitionWeek(w, weekIndex, priorities, exercisesData, aerobicLevel, userProfile))
     }
   }
 
