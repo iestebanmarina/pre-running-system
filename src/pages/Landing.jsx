@@ -106,7 +106,7 @@ export default function Landing() {
             {[
               { color: 'bg-black', label: 'Paso previo', title: 'Evaluación', desc: '7 tests específicos que realizas hoy, una sola vez, para identificar tus limitaciones individuales: tobillos, cadera, glúteos, core, flexibilidad, capacidad y equilibrio.' },
               { color: 'bg-gradient-to-br from-accent-orange to-accent-pink', label: 'Semanas 1-10', title: 'Fundamentos', desc: 'Plan personalizado para corregir tus disfunciones: movilidad, activación, fuerza y capacidad aeróbica.' },
-              { color: 'bg-black', label: 'Semanas 7-14', title: 'Transición', desc: 'Introducción gradual al running. Tu cuerpo ya está preparado para correr de forma segura y sostenible.' },
+              { color: 'bg-black', label: 'Semanas 7-12', title: 'Transición', desc: 'Introducción gradual al running. Tu cuerpo ya está preparado para correr de forma segura y sostenible.' },
             ].map((phase) => (
               <div key={phase.title} className="text-center">
                 <div className={`w-16 h-16 ${phase.color} text-white rounded-full flex items-center justify-center text-sm font-bold mx-auto mb-4 relative z-10`}>
@@ -139,7 +139,7 @@ export default function Landing() {
               ['Evaluación inicial', 'No evalúan', '7 tests específicos'],
               ['Personalización', 'Plan único para todos', 'Adaptado a tus limitaciones'],
               ['Tasa de lesión', '~70% en primer año', '5-10% con preparación'],
-              ['Resultado', 'Frustración y abandono', 'Correr 10-20 años sin lesión'],
+              ['Resultado', 'Frustración y abandono', 'Prevención y running a largo plazo'],
             ].map(([label, generic, prerunning], i) => (
               <div key={i} className="grid grid-cols-3 border-t border-border">
                 <div className="p-4 md:p-6 font-medium text-black text-sm md:text-base">{label}</div>
