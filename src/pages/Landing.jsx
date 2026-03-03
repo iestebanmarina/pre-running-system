@@ -43,8 +43,8 @@ export default function Landing() {
             {/* Stats Bento Grid */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-surface rounded-2xl p-6 border border-border">
-                <div className="text-4xl font-bold text-black">10M+</div>
-                <div className="text-sm text-muted mt-1">corredores en España</div>
+                <div className="text-4xl font-bold text-black">280K+</div>
+                <div className="text-sm text-muted mt-1">nuevos corredores en España al año</div>
               </div>
               <div className="bg-surface rounded-2xl p-6 border border-border">
                 <div className="text-4xl font-bold bg-gradient-to-r from-accent-orange to-accent-pink bg-clip-text text-transparent">70%</div>
