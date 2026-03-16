@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(cat:*)"
+    ]
+  },
+  "env": {
+    "GITHUB_TOKEN": "PONER_TOKEN_AQUI",
+    "SUPABASE_SERVICE_ROLE_KEY": "PONER_SERVICE_ROLE_KEY_AQUI"
+  }
+}

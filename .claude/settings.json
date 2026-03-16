@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint*)",
+      "Bash(npm run preview)",
+      "Bash(npm run format)",
+      "Bash(npx eslint*)",
+      "Bash(npx prettier*)",
+      "Bash(ls*)",
+      "Bash(supabase db push)",
+      "Bash(supabase migration new*)"
+    ],
+    "deny": [
+      "Bash(rm supabase/migrations/*)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": {
+          "tool_name": ["Edit", "Write"],
+          "file_path": "src/**/*.{js,jsx}"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx eslint --fix \"${CLAUDE_TOOL_OUTPUT_PATH}\" 2>&1 | tail -5"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": {
+          "tool_name": "Read",
+          "file_path": ".env"
+        },
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Este archivo contiene secrets. No muestres su contenido en la conversación. Si necesitas un valor, pide al usuario que lo proporcione directamente."
+          }
+        ]
+      }
+    ]
+  }
+}

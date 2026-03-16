@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.github.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    },
+    "supabase": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y", "@supabase/mcp-server-supabase@latest",
+        "--supabase-url", "${VITE_SUPABASE_URL}",
+        "--supabase-key", "${SUPABASE_SERVICE_ROLE_KEY}"
+      ]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
